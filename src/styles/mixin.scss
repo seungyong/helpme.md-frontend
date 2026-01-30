@@ -1,0 +1,41 @@
+@use "styles/variable" as *;
+
+@mixin big-large-text($color) {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: $color;
+}
+
+@mixin large-text($color) {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: $color;
+}
+
+@mixin medium-text() {
+  font-size: 1rem;
+  color: $text-color;
+}
+
+@mixin small-text($color) {
+  font-size: 0.875rem;
+  color: $color;
+}
+
+@mixin input-field() {
+  width: 100%;
+  border-radius: $border-radius;
+}
+
+@mixin button(
+  $border-color,
+  $background-color,
+  $padding,
+  $label-color: $text-color
+) {
+  border: 1px solid $border-color;
+  background: $background-color;
+  padding: $padding;
+  border-radius: $border-radius;
+  color: $label-color;
+}

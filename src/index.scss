@@ -1,0 +1,25 @@
+@use "styles/font";
+
+html,
+body {
+  background-color: $background-color;
+}
+
+* {
+  color: $text-color;
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  outline: none;
+  color: $text-color;
+  font-size: 1rem;
+  background-color: $background-elevated-color;
+
+  &::placeholder {
+    color: $text-sub-color;
+  }
+}
