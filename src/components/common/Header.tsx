@@ -1,10 +1,14 @@
 import styles from "./header.module.scss";
-
 import logo from "@assets/images/logo.svg";
+
+import { useAuthContext } from "@src/hooks/useAuthContext";
 import { useIsRepoPage } from "@src/hooks/useIsRepoPage";
 
 const Header = () => {
   const isRepoPage = useIsRepoPage();
+  const { isLoggedIn } = useAuthContext();
+
+  console.log(isLoggedIn);
 
   return (
     <header className={styles.header}>

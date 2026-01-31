@@ -1,0 +1,78 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 160px);
+}
+
+.content {
+  text-align: center;
+  padding: 2rem;
+}
+
+.errorCode {
+  font-size: 8rem;
+  font-weight: $font-bold;
+  color: $primary-color;
+  margin: 0;
+  line-height: 1;
+
+  @include max-tablet {
+    font-size: 6rem;
+  }
+
+  @include max-mobile {
+    font-size: 4rem;
+  }
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: $font-bold;
+  color: $text-color;
+  margin: 1.5rem 0 1rem;
+
+  @include max-tablet {
+    font-size: 1.5rem;
+  }
+
+  @include max-mobile {
+    font-size: 1.25rem;
+  }
+}
+
+.description {
+  font-size: 1rem;
+  color: $text-sub-color;
+  margin: 0 0 2rem;
+  line-height: 1.6;
+
+  @include max-mobile {
+    font-size: 0.875rem;
+  }
+}
+
+.homeButton {
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
+  font-weight: $font-bold;
+  color: $text-color;
+  background-color: $primary-color;
+  border: none;
+  border-radius: $border-radius;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: $primary-light-color;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  @include max-mobile {
+    padding: 0.625rem 1.5rem;
+    font-size: 0.875rem;
+  }
+}

@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 import styles from "./MainPage.module.scss";
 
 import danger from "@assets/images/danger.svg";
@@ -33,6 +35,11 @@ const MainPage = () => {
     },
   ];
 
+  const handleGithubLogin = () => {
+    sessionStorage.setItem("redirectUrl", "/repo/select");
+    window.location.href = `${import.meta.env.VITE_API_URL}/oauth2/login`;
+  };
+
   const howToReads = [
     "폴더/파일 구조 (src, app, docs, etc.)",
     "의존성/빌드 파일 (gradle, requirements.txt, package.json, etc.)",
@@ -57,7 +64,9 @@ const MainPage = () => {
           소개를 더 쉽게 만드세요.
         </p>
         <div className={styles.btnGroup}>
-          <a className={styles.githubBtn}>Github로 시작하기</a>
+          <Link className={styles.githubBtn} onClick={handleGithubLogin} to="#">
+            Github로 시작하기
+          </Link>
           <a href="#how-to-use" className={styles.subBtn}>
             어떤 식으로 만들어져요?
           </a>
