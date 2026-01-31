@@ -1,12 +1,17 @@
 @use "styles/font";
 
+* {
+  font-family: $font-family;
+}
+
 html,
 body {
   background-color: $background-color;
-}
-
-* {
   color: $text-color;
+  font-family: $font-family;
+  font-weight: $font-regular;
+  font-size: 1rem;
+  scroll-behavior: smooth;
 }
 
 input[type="text"] {
@@ -22,4 +27,47 @@ input[type="text"] {
   &::placeholder {
     color: $text-sub-color;
   }
+}
+
+button {
+  background: $background-color;
+  border-radius: $border-radius;
+}
+
+.text-sub-color {
+  color: $text-sub-color;
+}
+
+.text-sub-dark-color {
+  color: $text-sub-dark-color;
+}
+
+// 설명 텍스트: regular, 14px
+.text-description {
+  font-weight: $font-regular;
+  font-size: 14px;
+}
+
+// 기본 텍스트: regular, 16px
+.text-default {
+  font-weight: $font-regular;
+  font-size: 16px;
+}
+
+// 기본 강조 텍스트: bold, 16px
+.text-emphasis {
+  font-weight: $font-bold;
+  font-size: 16px;
+}
+
+// 조금 큰 강조 텍스트: bold, 18px
+.text-emphasis-medium {
+  font-weight: $font-bold;
+  font-size: 18px;
+}
+
+// 큰 강조 텍스트: bold, 20px
+.text-emphasis-large {
+  font-weight: $font-bold;
+  font-size: 20px;
 }

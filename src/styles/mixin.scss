@@ -1,5 +1,17 @@
 @use "styles/variable" as *;
 
+@mixin max-tablet {
+  @media (max-width: #{$breakpoint-tablet}) {
+    @content;
+  }
+}
+
+@mixin max-mobile {
+  @media (max-width: #{$breakpoint-mobile}) {
+    @content;
+  }
+}
+
 @mixin big-large-text($color) {
   font-size: 1.25rem;
   font-weight: 600;
