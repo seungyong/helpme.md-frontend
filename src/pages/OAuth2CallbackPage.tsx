@@ -2,29 +2,20 @@ import { useCallback, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 
-import { API } from "@src/utils/API";
 import { useAuthContext } from "@src/hooks/useAuthContext";
+import { ApiError } from "@src/types/error";
+import { useQuery } from "@tanstack/react-query";
+import { apiClient } from "@src/utils/apiClient";
 
 const OAuth2CallbackPage = () => {
   const { setIsLoggedIn } = useAuthContext();
   const location = useLocation();
   const navigate = useNavigate();
 
-  const handleCheckAuth = useCallback(async () => {
-    try {
-      await API.post<object | null>("/oauth2/check");
+  // URL에서 error 파라미터 확인
+  const hasError = new URLSearchParams(window.location.search).get("error");
 
-      toast.success("로그인 성공", {
-        icon: "🎉",
-      });
-    } catch {
-      toast.error("서버에 문제가 발생했습니다.\n잠시 후 다시 시도해주세요.", {
-        icon: "🚫",
-      });
-      navigate("/", { replace: true });
-      return;
-    }
-
+  const handleSuccess = useCallback(() => {
     setIsLoggedIn(true);
     const redirectUrl = sessionStorage.getItem("redirectUrl");
 
@@ -36,16 +27,50 @@ const OAuth2CallbackPage = () => {
     }
   }, [navigate, setIsLoggedIn]);
 
+  // error가 없을 때만 API 호출, 캐싱 방지 설정
+  const { isSuccess, isError } = useQuery<null, ApiError>({
+    queryKey: ["oauth2/check"],
+    queryFn: async (): Promise<null> => {
+      return await apiClient<null>("/oauth2/check", {
+        method: "POST"
+      });
+    },
+    enabled: !hasError,
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    retry: false,
+  });
+
+  // API 성공 시 처리
   useEffect(() => {
-    const error = new URLSearchParams(window.location.search).get("error");
-    if (error) {
+    if (isSuccess) {
+      toast.success("로그인 성공", {
+        icon: "🎉",
+      });
+      handleSuccess();
+    }
+  }, [isSuccess, handleSuccess]);
+
+  // API 실패 시 처리
+  useEffect(() => {
+    if (isError) {
+      toast.error("서버에 문제가 발생했습니다.\n잠시 후 다시 시도해주세요.", {
+        icon: "🚫",
+      });
+      navigate("/", { replace: true });
+    }
+  }, [isError, navigate]);
+
+  // error 파라미터가 있을 경우 처리
+  useEffect(() => {
+    if (hasError) {
       const previousPath = location.state?.previousPath || "/";
       navigate(previousPath, { replace: true });
-      return;
     }
-
-    handleCheckAuth();
-  }, [handleCheckAuth, location.state?.previousPath, navigate]);
+  }, [hasError, location.state?.previousPath, navigate]);
 
   return <></>;
 };
