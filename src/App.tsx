@@ -30,8 +30,7 @@ const AppContent = () => {
     defaultOptions: {
       queries: {
         retry: (_failureCount, error) => {
-          // AUTH_40103 에러인 경우 재시도하지 않음 (apiClient에서 처리)
-          if (error instanceof ApiError && error.errorCode === "AUTH_40103") {
+          if (error instanceof ApiError && error.status === 401) {
             return false;
           }
           // 다른 에러는 최대 3번까지 재시도
@@ -40,11 +39,10 @@ const AppContent = () => {
       },
       mutations: {
         retry: (_failureCount, error) => {
-          // AUTH_40103 에러인 경우 재시도하지 않음
-          if (error instanceof ApiError && error.errorCode === "AUTH_40103") {
+          if (error instanceof ApiError && error.status === 401) {
             return false;
           }
-          return false; // mutation은 기본적으로 재시도하지 않음
+          return false;
         },
       },
     },

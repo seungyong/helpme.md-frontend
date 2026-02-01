@@ -16,7 +16,7 @@ export const authFallback = async <T>(
   }
 
   // AUTH_40103: Access Token 만료
-  if (error.status === 401 && error.errorCode === "AUTH_40103") {
+  if (error.status === 401 && error.status === 401) {
     try {
       // Access Token 재발급 요청
       const response = await fetch(

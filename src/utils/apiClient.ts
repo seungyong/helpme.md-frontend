@@ -51,7 +51,7 @@ export const apiClient = async <T>(
     return await makeRequest();
   } catch (error) {
     // AUTH_40103 에러인 경우 authFallback으로 토큰 재발급 및 재시도
-    if (error instanceof ApiError && error.errorCode === "AUTH_40103") {
+    if (error instanceof ApiError && error.status === 401) {
       return (await authFallback(error, makeRequest)) as T;
     }
 
