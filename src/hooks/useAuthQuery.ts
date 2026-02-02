@@ -1,3 +1,4 @@
+import { APIEndpoint } from "@src/types/APIEndpoint";
 import { ApiError } from "@src/types/error";
 import { apiClient } from "@src/utils/apiClient";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -6,7 +7,7 @@ export const useAuthQuery = () => {
   return useQuery({
     queryKey: ["auth"],
     queryFn: async (): Promise<null> => {
-      return apiClient<null>("/oauth2/check", {
+      return apiClient<null>(APIEndpoint.OAUTH2_CHECK, {
         method: "POST",
       });
     },
@@ -20,7 +21,7 @@ export const useLoginMutation = () => {
 
   return useMutation({
     mutationFn: async (): Promise<null> => {
-      return apiClient<null>("/oauth2/check", {
+      return apiClient<null>(APIEndpoint.OAUTH2_CHECK, {
         method: "POST",
       });
     },

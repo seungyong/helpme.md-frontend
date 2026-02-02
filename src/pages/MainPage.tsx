@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import styles from "./MainPage.module.scss";
 
 import danger from "@assets/images/danger.svg";
+import { APIEndpoint } from "@src/types/APIEndpoint";
 
 const MainPage = () => {
   const howToUseCards = [
@@ -37,7 +38,7 @@ const MainPage = () => {
 
   const handleGithubLogin = () => {
     sessionStorage.setItem("redirectUrl", "/repo/select");
-    window.location.href = `${import.meta.env.VITE_API_URL}/oauth2/login`;
+    window.location.href = `${import.meta.env.VITE_API_URL}${APIEndpoint.OAUTH2_LOGIN}`;
   };
 
   const howToReads = [

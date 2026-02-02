@@ -1,3 +1,4 @@
+import { APIEndpoint } from "@src/types/APIEndpoint";
 import { ApiError } from "@src/types/error";
 
 /**
@@ -20,7 +21,7 @@ export const authFallback = async <T>(
     try {
       // Access Token 재발급 요청
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/users/reissue`,
+        `${import.meta.env.VITE_API_URL}${APIEndpoint.TOKEN_REISSUE}`,
         {
           credentials: "include",
           method: "POST",
