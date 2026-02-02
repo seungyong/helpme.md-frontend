@@ -41,7 +41,7 @@ export const useLogoutMutation = () => {
 
   return useMutation({
     mutationFn: async (): Promise<null> => {
-      return apiClient<null>("/oauth2/logout", {
+      return apiClient<null>(APIEndpoint.OAUTH2_LOGOUT, {
         method: "POST",
       });
     },

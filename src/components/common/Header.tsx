@@ -5,12 +5,24 @@ import logout from "@assets/images/logout.svg";
 import settings from "@assets/images/settings.svg";
 
 import { useAuthContext } from "@src/hooks/useAuthContext";
+import { useLogoutMutation } from "@src/hooks/useAuthQuery";
 import { useIsRepoPage } from "@src/hooks/useIsRepoPage";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Header = () => {
+  const navigate = useNavigate();
   const isRepoPage = useIsRepoPage();
   const { isLoggedIn } = useAuthContext();
+  const { mutateAsync: logoutAsync } = useLogoutMutation();
+
+  const handleLogout = async () => {
+    if (!isLoggedIn) {
+      return;
+    }
+
+    await logoutAsync();
+    navigate("/");
+  };
 
   return (
     <header className={styles.header}>
@@ -18,15 +30,19 @@ const Header = () => {
         className={`${styles.headerContent} ${isRepoPage ? styles.repo : ""}`}
       >
         <div className={styles.headerLeft}>
-          <img src={logo} alt="logo" />
+          <Link to="/">
+            <img src={logo} alt="logo" />
+          </Link>
           <div className={styles.headerLeftTitle}>
-            <p className="text-emphasis-medium">Helpme.md</p>
+            <Link to="/" className={styles.linkTitle}>
+              <p className="text-emphasis-medium">Helpme.md</p>
+            </Link>
             <p className={styles.subTitle}>README Generator</p>
           </div>
         </div>
         {isLoggedIn && (
           <div className={styles.headerRight}>
-            <button>
+            <button onClick={handleLogout}>
               <img src={logout} alt="logout" />
             </button>
             <Link to="/settings">

@@ -46,6 +46,14 @@
       align-items: flex-start;
       gap: 5px;
 
+      .linkTitle {
+        text-decoration: none;
+
+        &:visited {
+          color: $text-color;
+        }
+      }
+
       .subTitle {
         font-size: 0.625rem;
         color: $text-sub-color;

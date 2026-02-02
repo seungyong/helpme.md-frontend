@@ -1,4 +1,4 @@
-import { ApiError } from "@src/types/error";
+import { ApiError, ERROR_CODE } from "@src/types/error";
 import { authFallback } from "./authFallback";
 
 /**
@@ -50,8 +50,22 @@ export const apiClient = async <T>(
   try {
     return await makeRequest();
   } catch (error) {
-    // AUTH_40103 에러인 경우 authFallback으로 토큰 재발급 및 재시도
-    if (error instanceof ApiError && error.status === 401) {
+    const isGithubAuthError: boolean =
+      error instanceof ApiError &&
+      error.status === 401 &&
+      error.errorCode === ERROR_CODE.GITHUB_UNAUTHORIZED;
+    const isNoTokenError: boolean =
+      error instanceof ApiError &&
+      error.status === 401 &&
+      error.errorCode === ERROR_CODE.NOT_FOUND_TOKEN;
+
+    // Github OAuth, No Token 에러 제외한 401 에러인 경우 authFallback으로 토큰 재발급 및 재시도
+    if (
+      error instanceof ApiError &&
+      error.status === 401 &&
+      !isGithubAuthError &&
+      !isNoTokenError
+    ) {
       return (await authFallback(error, makeRequest)) as T;
     }
 
