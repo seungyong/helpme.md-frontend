@@ -1,12 +1,9 @@
-import { useState, ReactNode } from "react";
-import { AuthContext } from "./authContext";
+import { ReactNode } from "react";
+import { useAuthQuery } from "@src/hooks/useAuthQuery";
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  // 백그라운드에서 인증 체크만 수행 (로딩 화면 없음)
+  useAuthQuery();
 
-  return (
-    <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <>{children}</>;
 };

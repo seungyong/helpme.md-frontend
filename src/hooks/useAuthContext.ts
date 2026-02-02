@@ -1,4 +1,9 @@
-import { useContext } from "react";
-import { AuthContext } from "@src/context/AuthContext";
+import { useAuthQuery } from "./useAuthQuery";
 
-export const useAuthContext = () => useContext(AuthContext);
+export const useAuthContext = () => {
+  const { isSuccess } = useAuthQuery();
+
+  const isLoggedIn = isSuccess;
+
+  return { isLoggedIn };
+};
