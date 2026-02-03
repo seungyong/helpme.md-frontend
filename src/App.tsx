@@ -18,6 +18,7 @@ import RepoSelectPage from "@src/pages/RepoSelectPage";
 import RepoDetailPage from "@src/pages/RepoDetailPage";
 
 import Header from "@src/components/common/Header";
+import Footer from "@src/components/common/Footer";
 
 import styles from "./App.module.scss";
 import { APIEndpoint } from "./types/APIEndpoint";
@@ -37,6 +38,7 @@ const AppContent = () => {
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </div>
+      <Footer />
     </div>
   );
 };

@@ -1,0 +1,67 @@
+.dragableComponent {
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  max-height: 16.25rem;
+  padding-right: 0.5rem;
+
+  .component {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 1rem;
+    border: 1px solid $border-color;
+    border-radius: $border-radius;
+    background-color: $background-elevated-color;
+    cursor: move;
+    user-select: none;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    &:active {
+      cursor: grabbing;
+    }
+
+    .componentDragHandle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: $text-sub-color;
+      font-size: 1.25rem;
+      cursor: grab;
+      user-select: none;
+
+      &:active {
+        cursor: grabbing;
+      }
+    }
+
+    .componentTitle {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      box-orient: vertical;
+      color: $text-color;
+    }
+
+    button {
+      background-color: transparent;
+
+      img {
+        width: 1rem;
+        height: 1rem;
+        cursor: pointer;
+        user-select: none;
+        transition: opacity 0.2s;
+      }
+    }
+  }
+}

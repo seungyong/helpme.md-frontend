@@ -1,0 +1,22 @@
+.main {
+  min-height: calc(100vh - 4.25rem);
+  padding: 0.9375rem 0;
+
+  .mainSection {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9375rem;
+
+    .content {
+      display: grid;
+      grid-template-columns: 20% 40% 40%;
+      gap: 0.9375rem;
+
+      .sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 2.8125rem;
+      }
+    }
+  }
+}

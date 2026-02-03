@@ -1,13 +1,27 @@
 @use "styles/font";
 
+*::-webkit-scrollbar {
+  width: 0.5rem;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: $border-color;
+  border-radius: $border-radius;
+}
+
+*::-webkit-scrollbar-track {
+  background-color: $background-elevated-color;
+  border-radius: $border-radius;
+}
+
 * {
   font-family: $font-family;
+  color: $text-color;
 }
 
 html,
 body {
-  background-color: $background-color;
-  color: $text-color;
+  background: linear-gradient(to bottom, #15192a, #050608);
   font-family: $font-family;
   font-weight: $font-regular;
   font-size: 1rem;
@@ -51,29 +65,29 @@ button {
 // 설명 텍스트: regular, 14px
 .text-description {
   font-weight: $font-regular;
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 
 // 기본 텍스트: regular, 16px
 .text-default {
   font-weight: $font-regular;
-  font-size: 16px;
+  font-size: 1rem;
 }
 
 // 기본 강조 텍스트: bold, 16px
 .text-emphasis {
   font-weight: $font-bold;
-  font-size: 16px;
+  font-size: 1rem;
 }
 
 // 조금 큰 강조 텍스트: bold, 18px
 .text-emphasis-medium {
   font-weight: $font-bold;
-  font-size: 18px;
+  font-size: 1.125rem;
 }
 
 // 큰 강조 텍스트: bold, 20px
 .text-emphasis-large {
   font-weight: $font-bold;
-  font-size: 20px;
+  font-size: 1.25rem;
 }
