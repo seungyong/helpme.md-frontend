@@ -3,4 +3,6 @@ export enum APIEndpoint {
   OAUTH2_CHECK = "/oauth2/check",
   OAUTH2_LOGOUT = "/users/logout",
   TOKEN_REISSUE = "/users/reissue",
+  INSTALLATIONS = "/oauth2/installations",
+  REPOSITORIES = "/repos",
 }

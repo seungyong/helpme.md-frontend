@@ -14,10 +14,13 @@ import { useIsRepoPage } from "@src/hooks/useIsRepoPage";
 import MainPage from "@src/pages/MainPage";
 import OAuth2CallbackPage from "@src/pages/OAuth2CallbackPage";
 import NotFoundPage from "@src/pages/NotFoundPage";
+import RepoSelectPage from "@src/pages/RepoSelectPage";
+import RepoDetailPage from "@src/pages/RepoDetailPage";
 
 import Header from "@src/components/common/Header";
 
 import styles from "./App.module.scss";
+import { APIEndpoint } from "./types/APIEndpoint";
 
 const AppContent = () => {
   const isRepoPage = useIsRepoPage();
@@ -29,6 +32,8 @@ const AppContent = () => {
         <Routes>
           <Route path="/" element={<MainPage />} />
           <Route path="/oauth2/callback" element={<OAuth2CallbackPage />} />
+          <Route path="/repo/select" element={<RepoSelectPage />} />
+          <Route path="/repo/:owner/:name" element={<RepoDetailPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </div>
@@ -47,6 +52,8 @@ const queryClient = new QueryClient({
         query.queryKey[0] !== "auth"
       ) {
         queryClient.removeQueries({ queryKey: ["auth"] });
+        sessionStorage.setItem("redirectUrl", window.location.pathname);
+        window.location.href = `${import.meta.env.VITE_API_URL}${APIEndpoint.OAUTH2_LOGIN}`;
       }
     },
   }),
@@ -59,6 +66,7 @@ const queryClient = new QueryClient({
         // 다른 에러는 최대 3번까지 재시도
         return _failureCount < 3;
       },
+      refetchOnWindowFocus: false,
     },
     mutations: {
       retry: (_failureCount, error) => {
