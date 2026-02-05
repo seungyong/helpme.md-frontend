@@ -23,13 +23,13 @@ $background-gradient: linear-gradient(
 );
 
 $success-color: #008c33;
-$warning-color: #eab308;
+$warning-color: #d69a00;
 $error-color: #f97373;
 
 $border-radius: 6px;
 
 // 브레이크포인트 (반응형 디자인)
-$breakpoint-mobile: 480px;      // 모바일
-$breakpoint-tablet: 768px;      // 태블릿
-$breakpoint-desktop: 1024px;    // 데스크탑
-$breakpoint-wide: 1440px;       // 와이드 스크린
+$breakpoint-mobile: 480px; // 모바일
+$breakpoint-tablet: 768px; // 태블릿
+$breakpoint-desktop: 1024px; // 데스크탑
+$breakpoint-wide: 1440px; // 와이드 스크린

@@ -9,7 +9,7 @@ import search from "@assets/images/search.svg";
 import { Installation } from "@src/types/installation";
 import { apiClient } from "@src/utils/apiClient";
 import { APIEndpoint } from "@src/types/APIEndpoint";
-import { Repositories, RepositoryItem } from "@src/types/Repository";
+import { Repositories, RepositoryItem } from "@src/types/repository";
 
 const RepoSelectPage = () => {
   const PAGE_SIZE: number = 30;
