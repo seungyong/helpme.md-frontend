@@ -10,6 +10,7 @@ import { Repository } from "@src/types/repository";
 import Header from "@src/components/repo/Header";
 import DragableSection from "@src/components/repo/DragableSection";
 import Section from "@src/components/repo/Section";
+import MarkdownEditor from "@src/components/repo/MarkdownEditor";
 
 const mockRepo: Repository = {
   name: "dronedronedronedronedronedronedronedrone",
@@ -44,8 +45,10 @@ const RepoDetailPage = () => {
                   <DragableSection />
                   <Section />
                 </aside>
-                <div>Editor</div>
-                <div>Preivew</div>
+                <div className={styles.item}>
+                  <p className="text-emphasis">Editor</p>
+                  <MarkdownEditor />
+                </div>
               </div>
             </>
           )}

@@ -1,4 +1,4 @@
-import { useState, ReactNode } from "react";
+import { useState, ReactNode, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -116,53 +116,56 @@ const SectionStateManager = ({
     initialSections[0]
   );
 
-  const clickSection = (section: Section) => {
+  const clickSection = useCallback((section: Section) => {
     console.log("Clicked section:", section);
     setClickedSection(section);
-  };
+  }, []);
 
   // 섹션 추가
-  const createSection = (title: string, content: string) => {
+  const createSection = useCallback((title: string, content: string) => {
     console.log(`${title}\n ${content} 섹션 추가됨`);
-  };
+  }, []);
 
   // 순서 변경
-  const updateSectionOrder = (reorderedSections: Section[]) => {
+  const updateSectionOrder = useCallback((reorderedSections: Section[]) => {
     setSections(reorderedSections);
     console.log("순서 변경됨:", reorderedSections);
     // TODO: API 호출로 순서 저장
-  };
+  }, []);
 
-  // 섹션 내용 수정 (Editor에서 사용)
-  const updateSectionContent = (
-    sectionId: string | number,
-    content: string
-  ) => {
-    setSections((prev) =>
-      prev.map((section) =>
-        section.id === sectionId ? { ...section, content } : section
-      )
-    );
-    console.log(`섹션 ${sectionId} 내용 변경됨`);
-    // TODO: API 호출로 내용 저장
-  };
+  // 섹션 내용 수정
+  const updateSectionContent = useCallback(
+    (sectionId: string | number, content: string) => {
+      setSections((prev) =>
+        prev.map((section) =>
+          section.id === sectionId ? { ...section, content } : section
+        )
+      );
+      console.log(`섹션 ${sectionId} 내용 변경됨`);
+      // TODO: API 호출로 내용 저장
+    },
+    []
+  );
 
   // 섹션 삭제
-  const deleteSection = (sectionId: string | number) => {
-    if (sections.length === 1) {
-      toast.error("섹션은 최소 1개 이상 유지해야 합니다.");
-      return;
-    }
+  const deleteSection = useCallback(
+    (sectionId: string | number) => {
+      if (sections.length === 1) {
+        toast.error("섹션은 최소 1개 이상 유지해야 합니다.");
+        return;
+      }
 
-    setSections((prev) => prev.filter((section) => section.id !== sectionId));
-    console.log(`섹션 ${sectionId} 삭제됨`);
-    // TODO: API 호출로 삭제
-  };
+      setSections((prev) => prev.filter((section) => section.id !== sectionId));
+      console.log(`섹션 ${sectionId} 삭제됨`);
+      // TODO: API 호출로 삭제
+    },
+    [sections.length]
+  );
 
   // 섹션 리셋 (원본으로 되돌리기)
-  const resetSection = (splitMode: string) => {
+  const resetSection = useCallback((splitMode: string) => {
     console.log("Reset section with split mode:", splitMode);
-  };
+  }, []);
 
   return (
     <SectionContext.Provider

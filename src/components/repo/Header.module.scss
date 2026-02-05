@@ -43,16 +43,13 @@
     gap: 0.9375rem;
     justify-content: flex-end;
     min-width: 0;
+    font-size: 0.875rem;
 
     @media screen and (max-width: 41.25rem) {
       flex-direction: column;
 
       .btn {
         justify-content: center;
-      }
-
-      .branchSelect {
-        text-align: center;
       }
     }
 
