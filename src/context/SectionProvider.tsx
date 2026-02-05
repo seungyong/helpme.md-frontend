@@ -112,6 +112,14 @@ const SectionStateManager = ({
   children: React.ReactNode;
 }) => {
   const [sections, setSections] = useState<Section[]>(initialSections);
+  const [clickedSection, setClickedSection] = useState<Section>(
+    initialSections[0]
+  );
+
+  const clickSection = (section: Section) => {
+    console.log("Clicked section:", section);
+    setClickedSection(section);
+  };
 
   // 섹션 추가
   const createSection = (title: string, content: string) => {
@@ -160,6 +168,8 @@ const SectionStateManager = ({
     <SectionContext.Provider
       value={{
         sections,
+        clickedSection,
+        clickSection,
         createSection,
         updateSectionOrder,
         updateSectionContent,

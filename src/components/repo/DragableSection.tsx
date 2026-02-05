@@ -28,7 +28,7 @@ interface SortableItemProps {
 }
 
 const SortableItem = ({ section }: SortableItemProps) => {
-  const { deleteSection } = useSectionContext();
+  const { deleteSection, clickSection } = useSectionContext();
   const {
     attributes,
     listeners,
@@ -44,6 +44,11 @@ const SortableItem = ({ section }: SortableItemProps) => {
     opacity: isDragging ? 0.5 : 1,
   };
 
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    clickSection(section);
+  };
+
   const handleDeleteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     deleteSection(section.id);
@@ -56,6 +61,7 @@ const SortableItem = ({ section }: SortableItemProps) => {
       className={styles.component}
       {...attributes}
       {...listeners}
+      onClick={handleClick}
     >
       <div className={styles.componentDragHandle}>⋮⋮</div>
       <p className={styles.componentTitle}>{section.title}</p>
