@@ -29,7 +29,8 @@ $error-color: #f97373;
 $border-radius: 6px;
 
 // 브레이크포인트 (반응형 디자인)
-$breakpoint-mobile: 480px; // 모바일
-$breakpoint-tablet: 768px; // 태블릿
-$breakpoint-desktop: 1024px; // 데스크탑
-$breakpoint-wide: 1440px; // 와이드 스크린
+$breakpoint-mobile: 30rem; // 모바일
+$breakpoint-tablet: 48rem; // 태블릿
+$breakpoint-desktop: 64rem; // 데스크탑
+$breakpoint-wide: 90rem; // 와이드 스크린
+$breakpoint-large: 82.5rem; // 레포

@@ -4,7 +4,7 @@
   width: 100%;
   gap: 0.9375rem;
 
-  @media screen and (max-width: 82.5rem) {
+  @include max-large {
     grid-template-columns: 1fr;
 
     .mainTitle {

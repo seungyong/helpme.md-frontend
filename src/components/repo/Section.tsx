@@ -68,7 +68,7 @@ const Section = () => {
 
   return (
     <>
-      <div className="input-field">
+      <div className={`input-field ${styles.inputField}`}>
         <input
           type="text"
           placeholder="섹션 검색"

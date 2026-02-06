@@ -12,6 +12,12 @@
   }
 }
 
+@mixin max-large {
+  @media (max-width: #{$breakpoint-large}) {
+    @content;
+  }
+}
+
 @mixin big-large-text($color) {
   font-size: 1.25rem;
   font-weight: 600;

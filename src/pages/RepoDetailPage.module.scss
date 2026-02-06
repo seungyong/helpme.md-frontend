@@ -2,6 +2,10 @@
   height: calc(100vh - 4.25rem);
   padding: 0.9375rem 0;
 
+  @include max-large {
+    height: auto;
+  }
+
   .mainSection {
     display: flex;
     flex-direction: column;
@@ -9,19 +13,46 @@
     height: 100%;
 
     .content {
+      overflow-y: hidden;
       display: grid;
       grid-template-columns: 17.5rem minmax(0, 1fr);
-      grid-template-rows: 1fr;
       gap: 0.9375rem;
+      height: 100%;
 
-      @media screen and (max-width: 82.5rem) {
+      @include max-large {
         grid-template-columns: 1fr;
+        grid-template-rows: 60%;
+        overflow-y: auto;
+        height: auto;
+
+        & > * {
+          overflow: initial !important;
+        }
+
+        // 스크롤 제거
+        ::-webkit-scrollbar {
+          display: none;
+        }
+
+        ::-webkit-scrollbar-track {
+          display: none;
+        }
+
+        ::-webkit-scrollbar-thumb {
+          display: none;
+        }
       }
 
       .item {
+        overflow: hidden;
         display: flex;
         flex-direction: column;
         gap: 0.9375rem;
+
+        @include max-large {
+          gap: 25px;
+          overflow: initial !important;
+        }
       }
     }
   }
