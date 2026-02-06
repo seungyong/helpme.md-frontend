@@ -4,7 +4,7 @@ import logo from "@assets/images/logo.svg";
 import logout from "@assets/images/logout.svg";
 import settings from "@assets/images/settings.svg";
 
-import { useAuthContext } from "@src/hooks/useAuthContext";
+import { useAuth } from "@src/hooks/useAuth";
 import { useLogoutMutation } from "@src/hooks/useAuthQuery";
 import { useIsRepoPage } from "@src/hooks/useIsRepoPage";
 import { Link, useNavigate } from "react-router-dom";
@@ -12,7 +12,7 @@ import { Link, useNavigate } from "react-router-dom";
 const Header = () => {
   const navigate = useNavigate();
   const isRepoPage = useIsRepoPage();
-  const { isLoggedIn } = useAuthContext();
+  const { isLoggedIn } = useAuth();
   const { mutateAsync: logoutAsync } = useLogoutMutation();
 
   const handleLogout = async () => {

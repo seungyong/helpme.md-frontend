@@ -21,14 +21,14 @@ import styles from "./DragableSection.module.scss";
 import deleteIcon from "@assets/images/delete.svg";
 
 import { Section } from "@src/types/section";
-import { useSectionContext } from "@src/context/SectionContext";
+import { useSection } from "@src/hooks/useSection";
 
 interface SortableItemProps {
   section: Section;
 }
 
 const SortableItem = ({ section }: SortableItemProps) => {
-  const { deleteSection, clickSection } = useSectionContext();
+  const { deleteSection, clickSection } = useSection();
   const {
     attributes,
     listeners,
@@ -76,7 +76,7 @@ const SortableItem = ({ section }: SortableItemProps) => {
 };
 
 const DragableSection = () => {
-  const { sections, updateSectionOrder } = useSectionContext();
+  const { sections, updateSectionOrder } = useSection();
 
   const sensors = useSensors(
     useSensor(PointerSensor, {

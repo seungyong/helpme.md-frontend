@@ -1,11 +1,22 @@
-import { useState, ReactNode, useCallback } from "react";
+import { useState, ReactNode, useCallback, useMemo, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 
-import { Sections, Section } from "@src/types/section";
+import styles from "./SectionProvider.module.scss";
 
-import { SectionContext } from "./SectionContext";
+import { Sections, Section } from "@src/types/section";
+import { ApiError, ERROR_CODE } from "@src/types/error";
+import { Branches } from "@src/types/repository";
+
+import { SectionContext } from "../hooks/useSection";
+
+import Modal from "@src/components/common/Modal";
+import Select from "@src/components/common/Select";
+
+const mockBranches: Branches = {
+  branches: ["main", "develop", "feature/1", "feature/2", "feature/3"],
+};
 
 const mockSections: Sections = {
   sections: [
@@ -80,25 +91,174 @@ interface SectionProviderProps {
   children: ReactNode;
 }
 
-export const SectionProvider = ({ children }: SectionProviderProps) => {
+const InitSection = ({
+  isOpen,
+  onClose,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+}) => {
   const { owner, name } = useParams();
 
-  const { data, isLoading } = useQuery<Sections>({
-    queryKey: ["sections", owner, name],
-    queryFn: () => Promise.resolve(mockSections),
+  const sectionMode = useMemo<
+    {
+      label: string;
+      value: string;
+    }[]
+  >(
+    () => [
+      {
+        label: "분할 모드 (#, ## 제목)",
+        value: "split",
+      },
+      {
+        label: "전체 모드 (전체 내용)",
+        value: "whole",
+      },
+    ],
+    []
+  );
+  const [selectedMode, setSelectedMode] = useState<{
+    label: string;
+    value: string;
+  }>(sectionMode[0]);
+
+  const { data: branches } = useQuery<Branches, ApiError, string[]>({
+    queryKey: ["branches", owner, name],
     enabled: !!owner && !!name,
-    staleTime: Infinity,
+    queryFn: () => Promise.resolve(mockBranches),
+    select: (data: Branches) => data.branches,
+    retry: false,
     refetchOnWindowFocus: false,
   });
 
+  const defaultBranch = useMemo(() => {
+    return branches?.[0] || "";
+  }, [branches]);
+  const [selectedBranch, setSelectedBranch] = useState<string>("");
+
+  const handleChangeSelectMode = useCallback(
+    (value: string) => {
+      setSelectedMode(
+        sectionMode.find((mode) => mode.value === value) || sectionMode[0]
+      );
+    },
+    [sectionMode, setSelectedMode]
+  );
+
+  const handleChangeSelectBranch = useCallback(
+    (value: string) => {
+      setSelectedBranch(value);
+    },
+    [setSelectedBranch]
+  );
+
+  const handleCreateSection = useCallback(() => {
+    console.log("섹션 생성", selectedBranch, selectedMode);
+    // TODO: API 호출하여 섹션 생성 후 모달 닫기
+    onClose();
+  }, [selectedBranch, selectedMode, onClose]);
+
   return (
-    <SectionStateManager
-      key={isLoading ? "loading" : "loaded"}
-      initialSections={data?.sections || []}
-      isLoading={isLoading}
-    >
-      {children}
-    </SectionStateManager>
+    <Modal isOpen={isOpen} onRequestClose={() => {}}>
+      <div className={styles.modalContent}>
+        <div>
+          <h2 className="text-emphasis">
+            Branch 선택{" "}
+            <span className="text-description text-sub-color">
+              (README.md 기준 선택)
+            </span>
+          </h2>
+          <Select
+            options={
+              branches?.map((branch) => ({
+                label: branch,
+                value: branch,
+              })) || []
+            }
+            value={selectedBranch || defaultBranch}
+            onChange={handleChangeSelectBranch}
+          />
+        </div>
+        <div>
+          <h2 className="text-emphasis">분할 모드</h2>
+          <Select
+            options={sectionMode}
+            value={selectedMode.value}
+            onChange={handleChangeSelectMode}
+          />
+        </div>
+        <button className={styles.btn} onClick={handleCreateSection}>
+          섹션 생성
+        </button>
+      </div>
+    </Modal>
+  );
+};
+
+export const SectionProvider = ({ children }: SectionProviderProps) => {
+  const { owner, name } = useParams();
+  const [isManualModalOpen, setIsManualModalOpen] = useState<boolean>(false);
+  const [hasHandledError, setHasHandledError] = useState<boolean>(false);
+
+  const {
+    data: sections,
+    isError,
+    error,
+    isSuccess,
+  } = useQuery<Sections, ApiError, Section[]>({
+    queryKey: ["sections", owner, name],
+    enabled: !!owner && !!name,
+    queryFn: () => Promise.resolve(mockSections),
+    // queryFn: () =>
+    //   Promise.reject(
+    //     new ApiError({
+    //       status: 404,
+    //       error: "섹션을 찾을 수 없습니다.",
+    //       errorCode: ERROR_CODE.NOT_FOUND_SECTIONS,
+    //       code: "NOT_FOUND",
+    //       message: "섹션을 찾을 수 없습니다.",
+    //     })
+    //   ),
+    select: (data: Sections) => data.sections,
+    staleTime: Infinity,
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
+
+  const shouldShowInitModal = useMemo(() => {
+    return (
+      isError &&
+      error?.errorCode === ERROR_CODE.NOT_FOUND_SECTIONS &&
+      !hasHandledError
+    );
+  }, [isError, error?.errorCode, hasHandledError]);
+
+  const isInitModalOpen = useMemo(() => {
+    return isManualModalOpen || shouldShowInitModal;
+  }, [isManualModalOpen, shouldShowInitModal]);
+
+  const handleOpenManualModal = useCallback(() => {
+    setIsManualModalOpen(true);
+  }, []);
+
+  const handleCloseManualModal = useCallback(() => {
+    setIsManualModalOpen(false);
+    setHasHandledError(true);
+  }, []);
+
+  return (
+    <>
+      <InitSection isOpen={isInitModalOpen} onClose={handleCloseManualModal} />
+      <SectionStateManager
+        key={isSuccess ? "success" : "none"}
+        initialSections={sections || []}
+        isLoading={isSuccess}
+        onOpenManualModal={handleOpenManualModal}
+      >
+        {children}
+      </SectionStateManager>
+    </>
   );
 };
 
@@ -106,10 +266,12 @@ const SectionStateManager = ({
   initialSections,
   isLoading,
   children,
+  onOpenManualModal,
 }: {
   initialSections: Section[];
   isLoading: boolean;
   children: React.ReactNode;
+  onOpenManualModal: () => void;
 }) => {
   const [sections, setSections] = useState<Section[]>(initialSections);
   const [clickedSection, setClickedSection] = useState<Section>(
@@ -122,7 +284,7 @@ const SectionStateManager = ({
   }, []);
 
   // 섹션 추가
-  const createSection = useCallback((title: string, content: string) => {
+  const createSection = useCallback((title: string, content: string | null) => {
     console.log(`${title}\n ${content} 섹션 추가됨`);
   }, []);
 
@@ -163,9 +325,9 @@ const SectionStateManager = ({
   );
 
   // 섹션 리셋 (원본으로 되돌리기)
-  const resetSection = useCallback((splitMode: string) => {
-    console.log("Reset section with split mode:", splitMode);
-  }, []);
+  const resetSection = useCallback(() => {
+    onOpenManualModal();
+  }, [onOpenManualModal]);
 
   return (
     <SectionContext.Provider

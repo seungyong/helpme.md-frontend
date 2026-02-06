@@ -1,0 +1,24 @@
+.select {
+  width: 100%;
+  padding: 0.5rem 2.5rem 0.5rem 0.5rem;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  background-color: $background-elevated-color;
+  background-image: url("@assets/images/arrow-down.svg");
+  background-size: 1.125rem 1.125rem;
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  color: $text-color;
+  appearance: none;
+  cursor: pointer;
+
+  &:focus {
+    outline: none;
+    border-color: $primary-color;
+  }
+}
+
+.disabled {
+  background-color: $background-color;
+  cursor: not-allowed;
+}

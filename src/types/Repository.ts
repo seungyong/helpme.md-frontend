@@ -15,3 +15,7 @@ export interface Repository {
   avatarUrl: string;
   defaultBranch: string;
 }
+
+export interface Branches {
+  branches: string[];
+}

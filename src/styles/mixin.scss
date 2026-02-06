@@ -57,3 +57,93 @@
   border-radius: $border-radius;
   color: $label-color;
 }
+
+@mixin button-success($width: 100%) {
+  @include button(
+    rgba(0, 184, 68, 0.5647058824),
+    rgba(0, 140, 51, 0.1294117647),
+    0.5rem 1rem
+  );
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  width: $width;
+
+  &:hover {
+    background-color: rgba(0, 140, 51, 0.2588235294);
+  }
+}
+
+@mixin button-warning($width: 100%) {
+  @include button(
+    rgba(214, 154, 0, 0.5647058824),
+    rgba(214, 154, 0, 0.1294117647),
+    0.5rem 1rem
+  );
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  width: $width;
+
+  &:hover {
+    background-color: rgba(214, 154, 0, 0.2588235294);
+  }
+}
+
+@mixin button-error($width: 100%) {
+  @include button(
+    rgba(239, 68, 68, 0.5647058824),
+    rgba(239, 68, 68, 0.1294117647),
+    0.5rem 1rem
+  );
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  width: $width;
+
+  &:hover {
+    background-color: rgba(239, 68, 68, 0.2588235294);
+  }
+}
+
+@mixin button-primary($width: 100%) {
+  @include button(
+    rgba(59, 130, 246, 0.5647058824),
+    rgba(59, 130, 246, 0.1294117647),
+    0.5rem 1rem
+  );
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  width: $width;
+
+  &:hover {
+    background-color: rgba(59, 130, 246, 0.2588235294);
+  }
+}
+
+@mixin button-gray($width: 100%) {
+  @include button(
+    rgba(107, 114, 128, 0.5647058824),
+    rgba(107, 114, 128, 0.1294117647),
+    0.5rem 1rem
+  );
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  width: $width;
+
+  &:hover {
+    background-color: rgba(107, 114, 128, 0.2588235294);
+  }
+}

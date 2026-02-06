@@ -4,7 +4,10 @@ import styles from "./Section.module.scss";
 
 import add from "@assets/images/add.svg";
 
-import { useSectionContext } from "@src/context/SectionContext";
+import { useSection } from "@src/hooks/useSection";
+
+import Modal from "@src/components/common/Modal";
+import toast from "react-hot-toast";
 
 type PreparedSection = {
   title: string;
@@ -55,12 +58,34 @@ const preparedSections: PreparedSection[] = [
 ];
 
 const Section = () => {
-  const { createSection } = useSectionContext();
+  const { createSection } = useSection();
+  const [newSectionTitle, setNewSectionTitle] = useState<string>("");
   const [title, setTitle] = useState<string>("");
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const sections = useMemo(() => {
     return preparedSections.filter((section) => section.title.includes(title));
   }, [title]);
+
+  const handleModal = () => {
+    setIsOpen(true);
+  };
+
+  const handleCancel = () => {
+    setNewSectionTitle("");
+    setIsOpen(false);
+  };
+
+  const handleCreateSection = () => {
+    if (newSectionTitle.trim() === "") {
+      toast.error("섹션 이름을 입력해주세요.");
+      return;
+    }
+
+    createSection(newSectionTitle, null);
+    setNewSectionTitle("");
+    setIsOpen(false);
+  };
 
   const handleAddSection = (title: string, content: string) => {
     createSection(title, content);
@@ -68,6 +93,37 @@ const Section = () => {
 
   return (
     <>
+      <Modal
+        isOpen={isOpen}
+        onRequestClose={() => setIsOpen(false)}
+        width="30rem"
+      >
+        <div className={styles.modalContent}>
+          <h2 className="text-emphasis-large">섹션 추가</h2>
+          <div className="input-field">
+            <input
+              type="text"
+              placeholder="섹션 이름"
+              value={newSectionTitle}
+              onChange={(e) => setNewSectionTitle(e.target.value)}
+            />
+          </div>
+          <div className={styles.btnGroup}>
+            <button
+              className={`${styles.btn} ${styles.cancelBtn}`}
+              onClick={handleCancel}
+            >
+              <p>취소</p>
+            </button>
+            <button
+              className={`${styles.btn} ${styles.addBtn}`}
+              onClick={handleCreateSection}
+            >
+              <p>섹션 추가</p>
+            </button>
+          </div>
+        </div>
+      </Modal>
       <div className={`input-field ${styles.inputField}`}>
         <input
           type="text"
@@ -77,7 +133,10 @@ const Section = () => {
         />
       </div>
       <div className={styles.btnGroup}>
-        <button className={`${styles.btn} ${styles.addBtn}`}>
+        <button
+          className={`${styles.btn} ${styles.addBtn}`}
+          onClick={handleModal}
+        >
           <img src={add} alt="add" />
           <p>섹션 추가</p>
         </button>

@@ -5,31 +5,28 @@ import styles from "./MarkdownEditor.module.scss";
 
 import MergeIcon from "@assets/images/merge.svg";
 import EditIcon from "@assets/images/edit.svg";
+import CopyIcon from "@assets/images/copy.svg";
 
-import { useSectionContext } from "@src/context/SectionContext";
+import { useSection } from "@src/hooks/useSection";
+import toast from "react-hot-toast";
 
 const MarkdownEditor = () => {
-  const { sections, clickedSection, updateSectionContent } =
-    useSectionContext();
+  const { sections, clickedSection, updateSectionContent } = useSection();
 
   const fullContent = useMemo(() => {
-    return sections.map((section) => section.content).join("\n");
+    return sections.map((section) => section.content || "").join("\n\n");
   }, [sections]);
 
   const [isMerging, setIsMerging] = useState<boolean>(false);
   const [isDirty, setIsDirty] = useState<boolean>(false);
-  const [content, setContent] = useState<string>(clickedSection.content);
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const prevSectionIdRef = useRef<string | number>(clickedSection.id);
+  const [content, setContent] = useState<string>(clickedSection?.content || "");
 
-  const handleChange = (value: string) => {
-    setContent(value);
-    setIsDirty(true);
-  };
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const prevSectionIdRef = useRef<string | number>(clickedSection?.id);
 
   useEffect(() => {
     // 섹션이 실제로 변경되었는지 확인
-    if (prevSectionIdRef.current !== clickedSection.id) {
+    if (prevSectionIdRef.current !== clickedSection?.id) {
       // 변경사항이 있으면 이전 섹션에 즉시 저장
       if (isDirty) {
         if (saveTimeoutRef.current) {
@@ -40,14 +37,14 @@ const MarkdownEditor = () => {
       }
 
       // 새 섹션으로 전환
-      prevSectionIdRef.current = clickedSection.id;
+      prevSectionIdRef.current = clickedSection?.id;
       // eslint-disable-next-line
-      setContent(clickedSection.content);
+      setContent(clickedSection?.content || "");
       setIsDirty(false);
     }
   }, [
-    clickedSection.id,
-    clickedSection.content,
+    clickedSection?.id,
+    clickedSection?.content,
     isDirty,
     content,
     updateSectionContent,
@@ -73,7 +70,12 @@ const MarkdownEditor = () => {
         clearTimeout(saveTimeoutRef.current);
       }
     };
-  }, [content, isDirty, clickedSection.id, updateSectionContent]);
+  }, [content, isDirty, clickedSection?.id, updateSectionContent]);
+
+  const handleChange = (value: string) => {
+    setContent(value);
+    setIsDirty(true);
+  };
 
   const mergeCommand = useMemo(
     () => ({
@@ -81,13 +83,7 @@ const MarkdownEditor = () => {
       keyCommand: "merge-sections",
       buttonProps: {
         "aria-label": "Merge sections",
-        title: isMerging ? "편집 모드로 돌아가기" : "전체 섹션 병합 보기",
-        style: isMerging
-          ? {
-              backgroundColor: "#3b82f621",
-              border: "1px solid #60a5fa90",
-            }
-          : {},
+        title: "전체 섹션 병합 보기",
       },
       icon: (
         <img
@@ -132,6 +128,26 @@ const MarkdownEditor = () => {
     []
   );
 
+  const copyCommand = useMemo(
+    () => ({
+      name: "copy-sections",
+      keyCommand: "copy-sections",
+      buttonProps: { "aria-label": "Copy sections", disabled: false },
+      icon: <img src={CopyIcon} alt="copy" />,
+      disabled: false,
+      execute: () => {
+        if (isMerging) {
+          navigator.clipboard.writeText(fullContent);
+        } else {
+          navigator.clipboard.writeText(content);
+        }
+
+        toast.success("클립보드에 복사되었습니다.");
+      },
+    }),
+    [isMerging, fullContent, content]
+  );
+
   const displayContent = isMerging ? fullContent : content;
 
   const editorCommands = useMemo(() => {
@@ -168,11 +184,19 @@ const MarkdownEditor = () => {
 
   const editorExtraCommands = useMemo(() => {
     if (isMerging) {
-      return [editCommand, commands.divider, commands.fullscreen];
+      return [
+        copyCommand,
+        commands.divider,
+        editCommand,
+        commands.divider,
+        commands.fullscreen,
+      ];
     }
 
     // 일반 모드: 모든 버튼 표시
     return [
+      copyCommand,
+      commands.divider,
       commands.codeEdit,
       commands.codeLive,
       commands.codePreview,
@@ -181,7 +205,7 @@ const MarkdownEditor = () => {
       commands.divider,
       commands.fullscreen,
     ];
-  }, [isMerging, mergeCommand, editCommand]);
+  }, [isMerging, copyCommand, mergeCommand, editCommand]);
 
   return (
     <div className={styles.markdownEditor}>

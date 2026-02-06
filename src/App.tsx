@@ -8,7 +8,7 @@ import {
 
 import { ApiError } from "./types/error";
 
-import { AuthProvider } from "@src/context/AuthProvider";
+import { AuthProvider } from "@src/providers/AuthProvider";
 import { useIsRepoPage } from "@src/hooks/useIsRepoPage";
 
 import MainPage from "@src/pages/MainPage";

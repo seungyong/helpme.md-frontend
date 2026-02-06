@@ -7,10 +7,10 @@ import reset from "@assets/images/reset.svg";
 
 import { Repository } from "@src/types/repository";
 
-import { useSectionContext } from "@src/context/SectionContext";
+import { useSection } from "@src/hooks/useSection";
 
 const Header = ({ repo }: { repo: Repository }) => {
-  const { resetSection } = useSectionContext();
+  const { resetSection } = useSection();
 
   const handleResetSection = () => {
     resetSection("split");

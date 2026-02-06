@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import styles from "./RepoDetailPage.module.scss";
 
-import { SectionProvider } from "@src/context/SectionProvider";
+import { SectionProvider } from "@src/providers/SectionProvider";
 
 import { Repository } from "@src/types/repository";
 

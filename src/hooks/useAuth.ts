@@ -1,6 +1,6 @@
 import { useAuthQuery } from "./useAuthQuery";
 
-export const useAuthContext = () => {
+export const useAuth = () => {
   const { isSuccess } = useAuthQuery();
 
   const isLoggedIn = isSuccess;
