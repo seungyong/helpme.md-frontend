@@ -1,0 +1,119 @@
+import { useState, useMemo, useCallback } from "react";
+
+import styles from "./InitSectionModal.module.scss";
+
+import Modal from "@src/components/common/Modal";
+import Select from "@src/components/common/Select";
+import LoadingButton from "@src/components/common/LoadingButton";
+
+import { useBranch } from "@src/hooks/useBranch";
+
+interface InitSectionProps {
+  isOpen: boolean;
+  onComplete: () => void;
+  onClose?: () => void;
+}
+
+interface SelectOption {
+  label: string;
+  value: string;
+}
+
+const InitSection = ({
+  isOpen,
+  onComplete,
+  onClose = () => {},
+}: InitSectionProps) => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const sectionMode = useMemo<SelectOption[]>(
+    () => [
+      {
+        label: "분할 모드 (#, ## 제목)",
+        value: "split",
+      },
+      {
+        label: "전체 모드 (전체 내용)",
+        value: "whole",
+      },
+    ],
+    []
+  );
+  const [selectedMode, setSelectedMode] = useState<SelectOption>(
+    sectionMode[0]
+  );
+
+  const { branches, initialBranch, isSuccess } = useBranch();
+  const [selectedBranch, setSelectedBranch] = useState<string>(initialBranch);
+
+  const effectiveBranch = useMemo(() => {
+    return selectedBranch || initialBranch;
+  }, [selectedBranch, initialBranch]);
+
+  const handleChangeSelectMode = useCallback(
+    (value: string) => {
+      setSelectedMode(
+        sectionMode.find((mode) => mode.value === value) || sectionMode[0]
+      );
+    },
+    [sectionMode]
+  );
+
+  const handleChangeSelectBranch = useCallback((value: string) => {
+    setSelectedBranch(value);
+  }, []);
+
+  const handleCreateSection = useCallback(() => {
+    setIsLoading(true);
+    console.log("섹션 생성", effectiveBranch, selectedMode);
+    // TODO: API 호출하여 섹션 생성 후 모달 닫기
+    setTimeout(() => {
+      setIsLoading(false);
+      onComplete();
+    }, 1000);
+  }, [effectiveBranch, selectedMode, onComplete]);
+
+  return (
+    <Modal isOpen={isOpen} onRequestClose={onClose}>
+      <div className={styles.modalContent}>
+        <div>
+          <h2 className="text-emphasis">
+            Branch 선택{" "}
+            <span className="text-description text-sub-color">
+              (README.md 기준 선택)
+            </span>
+          </h2>
+          <Select
+            options={
+              branches?.map((branch) => ({
+                label: branch,
+                value: branch,
+              })) || []
+            }
+            value={effectiveBranch}
+            onChange={handleChangeSelectBranch}
+            disabled={!isSuccess}
+          />
+        </div>
+        <div>
+          <h2 className="text-emphasis">분할 모드</h2>
+          <Select
+            options={sectionMode}
+            value={selectedMode.value}
+            onChange={handleChangeSelectMode}
+          />
+        </div>
+        <LoadingButton
+          onClick={handleCreateSection}
+          isLoading={isLoading}
+          disabled={!isSuccess}
+          className={styles.btn}
+        >
+          섹션 생성
+        </LoadingButton>
+      </div>
+    </Modal>
+  );
+};
+
+export default InitSection;

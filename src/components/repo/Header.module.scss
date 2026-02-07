@@ -48,31 +48,16 @@
     @media screen and (max-width: 41.25rem) {
       flex-direction: column;
 
-      .btn {
+      button {
         justify-content: center;
       }
     }
 
-    .btn {
+    button {
       img {
         width: 1rem;
         height: 1rem;
-      }
-
-      &.resetBtn {
-        @include button-gray("fit-content");
-      }
-
-      &.evaluationBtn {
-        @include button-warning("fit-content");
-      }
-
-      &.generateBtn {
-        @include button-primary("fit-content");
-      }
-
-      &.prBtn {
-        @include button-success("fit-content");
+        margin-right: 0.5rem;
       }
     }
   }

@@ -1,0 +1,7 @@
+.evaluationBtn {
+  @include button-warning("fit-content");
+}
+
+.emphasisText {
+  color: $error-color;
+}

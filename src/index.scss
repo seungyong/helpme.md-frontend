@@ -105,3 +105,8 @@ button {
 .ReactModal__Overlay--before-close {
   opacity: 0;
 }
+
+.w-md-editor-text {
+  height: auto;
+  min-height: 100% !important;
+}

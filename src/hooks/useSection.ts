@@ -3,6 +3,7 @@ import { Section } from "@src/types/section";
 
 export interface SectionContextType {
   sections: Section[];
+  fullContent: string;
   clickedSection: Section;
   clickSection: (section: Section) => void;
   createSection: (title: string, content: string | null) => void;

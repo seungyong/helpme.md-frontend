@@ -11,11 +11,7 @@ import { useSection } from "@src/hooks/useSection";
 import toast from "react-hot-toast";
 
 const MarkdownEditor = () => {
-  const { sections, clickedSection, updateSectionContent } = useSection();
-
-  const fullContent = useMemo(() => {
-    return sections.map((section) => section.content || "").join("\n\n");
-  }, [sections]);
+  const { fullContent, clickedSection, updateSectionContent } = useSection();
 
   const [isMerging, setIsMerging] = useState<boolean>(false);
   const [isDirty, setIsDirty] = useState<boolean>(false);
@@ -99,7 +95,7 @@ const MarkdownEditor = () => {
         setIsMerging(true);
       },
     }),
-    [isMerging]
+    []
   );
 
   const editCommand = useMemo(

@@ -1,22 +1,13 @@
-import { useState, ReactNode, useCallback, useMemo, useEffect } from "react";
+import { useState, ReactNode, useCallback, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 
-import styles from "./SectionProvider.module.scss";
-
 import { Sections, Section } from "@src/types/section";
 import { ApiError, ERROR_CODE } from "@src/types/error";
-import { Branches } from "@src/types/repository";
 
 import { SectionContext } from "../hooks/useSection";
-
-import Modal from "@src/components/common/Modal";
-import Select from "@src/components/common/Select";
-
-const mockBranches: Branches = {
-  branches: ["main", "develop", "feature/1", "feature/2", "feature/3"],
-};
+import InitSection from "@src/components/repo/InitSectionModal";
 
 const mockSections: Sections = {
   sections: [
@@ -91,111 +82,6 @@ interface SectionProviderProps {
   children: ReactNode;
 }
 
-const InitSection = ({
-  isOpen,
-  onClose,
-}: {
-  isOpen: boolean;
-  onClose: () => void;
-}) => {
-  const { owner, name } = useParams();
-
-  const sectionMode = useMemo<
-    {
-      label: string;
-      value: string;
-    }[]
-  >(
-    () => [
-      {
-        label: "분할 모드 (#, ## 제목)",
-        value: "split",
-      },
-      {
-        label: "전체 모드 (전체 내용)",
-        value: "whole",
-      },
-    ],
-    []
-  );
-  const [selectedMode, setSelectedMode] = useState<{
-    label: string;
-    value: string;
-  }>(sectionMode[0]);
-
-  const { data: branches } = useQuery<Branches, ApiError, string[]>({
-    queryKey: ["branches", owner, name],
-    enabled: !!owner && !!name,
-    queryFn: () => Promise.resolve(mockBranches),
-    select: (data: Branches) => data.branches,
-    retry: false,
-    refetchOnWindowFocus: false,
-  });
-
-  const defaultBranch = useMemo(() => {
-    return branches?.[0] || "";
-  }, [branches]);
-  const [selectedBranch, setSelectedBranch] = useState<string>("");
-
-  const handleChangeSelectMode = useCallback(
-    (value: string) => {
-      setSelectedMode(
-        sectionMode.find((mode) => mode.value === value) || sectionMode[0]
-      );
-    },
-    [sectionMode, setSelectedMode]
-  );
-
-  const handleChangeSelectBranch = useCallback(
-    (value: string) => {
-      setSelectedBranch(value);
-    },
-    [setSelectedBranch]
-  );
-
-  const handleCreateSection = useCallback(() => {
-    console.log("섹션 생성", selectedBranch, selectedMode);
-    // TODO: API 호출하여 섹션 생성 후 모달 닫기
-    onClose();
-  }, [selectedBranch, selectedMode, onClose]);
-
-  return (
-    <Modal isOpen={isOpen} onRequestClose={() => {}}>
-      <div className={styles.modalContent}>
-        <div>
-          <h2 className="text-emphasis">
-            Branch 선택{" "}
-            <span className="text-description text-sub-color">
-              (README.md 기준 선택)
-            </span>
-          </h2>
-          <Select
-            options={
-              branches?.map((branch) => ({
-                label: branch,
-                value: branch,
-              })) || []
-            }
-            value={selectedBranch || defaultBranch}
-            onChange={handleChangeSelectBranch}
-          />
-        </div>
-        <div>
-          <h2 className="text-emphasis">분할 모드</h2>
-          <Select
-            options={sectionMode}
-            value={selectedMode.value}
-            onChange={handleChangeSelectMode}
-          />
-        </div>
-        <button className={styles.btn} onClick={handleCreateSection}>
-          섹션 생성
-        </button>
-      </div>
-    </Modal>
-  );
-};
-
 export const SectionProvider = ({ children }: SectionProviderProps) => {
   const { owner, name } = useParams();
   const [isManualModalOpen, setIsManualModalOpen] = useState<boolean>(false);
@@ -205,7 +91,9 @@ export const SectionProvider = ({ children }: SectionProviderProps) => {
     data: sections,
     isError,
     error,
+    isLoading,
     isSuccess,
+    refetch,
   } = useQuery<Sections, ApiError, Section[]>({
     queryKey: ["sections", owner, name],
     enabled: !!owner && !!name,
@@ -242,18 +130,28 @@ export const SectionProvider = ({ children }: SectionProviderProps) => {
     setIsManualModalOpen(true);
   }, []);
 
-  const handleCloseManualModal = useCallback(() => {
-    setIsManualModalOpen(false);
-    setHasHandledError(true);
-  }, []);
+  const handleCloseManualModal = useCallback(async () => {
+    try {
+      await refetch({ throwOnError: true });
+      setHasHandledError(true);
+    } catch {
+      toast.error("생성에 실패했습니다.");
+    } finally {
+      setIsManualModalOpen(false);
+    }
+  }, [refetch]);
 
   return (
     <>
-      <InitSection isOpen={isInitModalOpen} onClose={handleCloseManualModal} />
+      <InitSection
+        isOpen={isInitModalOpen}
+        onComplete={handleCloseManualModal}
+        onClose={isInitModalOpen ? handleCloseManualModal : undefined}
+      />
       <SectionStateManager
         key={isSuccess ? "success" : "none"}
         initialSections={sections || []}
-        isLoading={isSuccess}
+        isLoading={isLoading}
         onOpenManualModal={handleOpenManualModal}
       >
         {children}
@@ -277,6 +175,10 @@ const SectionStateManager = ({
   const [clickedSection, setClickedSection] = useState<Section>(
     initialSections[0]
   );
+
+  const fullContent = useMemo(() => {
+    return sections?.map((section) => section.content || "").join("\n\n") || "";
+  }, [sections]);
 
   const clickSection = useCallback((section: Section) => {
     console.log("Clicked section:", section);
@@ -333,6 +235,7 @@ const SectionStateManager = ({
     <SectionContext.Provider
       value={{
         sections,
+        fullContent,
         clickedSection,
         clickSection,
         createSection,

@@ -33,7 +33,7 @@ const Modal = ({
           position: "absolute",
           top: "50%",
           transform: "translate(0, -50%)",
-          width: width,
+          maxWidth: width,
           height: height,
           margin: "0 auto",
           backgroundColor: "#020617",

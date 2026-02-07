@@ -1,0 +1,42 @@
+.modalContent {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  text-align: center;
+}
+
+.descriptionText {
+  text-wrap: balance;
+  word-break: keep-all;
+
+  & > p:first-child {
+    margin-bottom: 0.5rem;
+  }
+
+  .emphasisText {
+    color: $error-color;
+  }
+}
+
+.btnGroup {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+
+  .btn {
+    @include button($border-color, $background-elevated-color, 0.5rem 1rem);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .cancelBtn {
+    @include button-gray();
+  }
+
+  .startBtn {
+    @include button-primary();
+  }
+}
