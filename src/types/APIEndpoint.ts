@@ -7,6 +7,7 @@ export enum APIEndpoint {
   REPOSITORIES = "/repos",
   SECTIONS = "/repos/:owner/:name/sections",
   SECTIONS_INIT = "/repos/:owner/:name/sections/init",
+  SECTIONS_REORDER = "/repos/:owner/:name/sections/reorder",
   BRANCHES = "/repos/:owner/:name/branches",
   SSE = "/sse",
   GENERATE = "/repos/:owner/:name/generate/sse",

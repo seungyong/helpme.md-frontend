@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import toast from "react-hot-toast";
 
 import styles from "./Section.module.scss";
 
@@ -7,7 +8,6 @@ import add from "@assets/images/add.svg";
 import { useSection } from "@src/hooks/useSection";
 
 import Modal from "@src/components/common/Modal";
-import toast from "react-hot-toast";
 
 type PreparedSection = {
   title: string;
@@ -82,13 +82,33 @@ const Section = () => {
       return;
     }
 
-    createSection(newSectionTitle, null);
-    setNewSectionTitle("");
-    setIsOpen(false);
+    createSection(
+      { title: newSectionTitle, content: null },
+      {
+        onSuccess: () => {
+          toast.success("섹션 추가되었습니다.");
+          setNewSectionTitle("");
+          setIsOpen(false);
+        },
+        onError: () => {
+          toast.error("섹션 추가에 실패했습니다.");
+        },
+      }
+    );
   };
 
   const handleAddSection = (title: string, content: string) => {
-    createSection(title, content);
+    createSection(
+      { title, content },
+      {
+        onSuccess: () => {
+          toast.success("섹션 추가되었습니다.");
+        },
+        onError: () => {
+          toast.error("섹션 추가에 실패했습니다.");
+        },
+      }
+    );
   };
 
   return (

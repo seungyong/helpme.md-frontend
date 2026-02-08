@@ -13,9 +13,17 @@ import toast from "react-hot-toast";
 import { Sections, Section } from "@src/types/section";
 import { ApiError, ERROR_CODE } from "@src/types/error";
 import { APIEndpoint, generateAPIEndpoint } from "@src/types/APIEndpoint";
+import {
+  CreateSectionRequest,
+  InitSectionRequest,
+  ReorderSectionRequest,
+} from "@src/types/request/repository";
+import { Callback } from "@src/types/request/common";
 
 import { apiClient } from "@src/utils/apiClient";
-import { SectionContext } from "../hooks/useSection";
+
+import { SectionContext } from "@src/hooks/useSection";
+
 import InitSection from "@src/components/repo/InitSectionModal";
 
 interface SectionProviderProps {
@@ -141,18 +149,39 @@ const SectionStateManager = ({
     return sections?.map((section) => section.content || "").join("\n\n") || "";
   }, [sections]);
 
-  const { mutateAsync: initSectionsMutation } = useMutation<
+  const { mutate: addSectionMutation } = useMutation<
+    Section,
+    ApiError,
+    CreateSectionRequest
+  >({
+    mutationFn: (request) =>
+      apiClient<Section>(
+        generateAPIEndpoint(APIEndpoint.SECTIONS, owner || "", name || ""),
+        {
+          method: "POST",
+          body: JSON.stringify(request),
+        }
+      ),
+    onSuccess: (data) => {
+      setSections((prev) => [...prev, data]);
+    },
+    onError: (error) => {
+      toast.error(error.message || "섹션 추가에 실패했습니다.");
+    },
+  });
+
+  const { mutate: initSectionsMutation } = useMutation<
     Sections,
     ApiError,
-    { branch: string; splitMode: string }
+    InitSectionRequest
   >({
-    mutationFn: ({ branch, splitMode }) =>
+    mutationFn: (request) =>
       apiClient<Sections>(
         generateAPIEndpoint(
           APIEndpoint.SECTIONS_INIT,
           owner || "",
           name || ""
-        ) + `?branch=${branch}&splitMode=${splitMode}`,
+        ) + `?branch=${request.branch}&splitMode=${request.splitMode}`,
         {
           method: "PUT",
         }
@@ -160,16 +189,52 @@ const SectionStateManager = ({
     onSuccess: (data) => {
       setSections(data.sections);
     },
-    onError: (error) => {
-      toast.error(error.message || "섹션 초기화에 실패했습니다.");
+    onError: () => {
+      toast.error("섹션 초기화에 실패했습니다.");
+    },
+  });
+
+  const { mutate: reorderSectionsMutation } = useMutation<
+    Sections,
+    ApiError,
+    ReorderSectionRequest
+  >({
+    mutationFn: (request) =>
+      apiClient<Sections>(
+        generateAPIEndpoint(
+          APIEndpoint.SECTIONS_REORDER,
+          owner || "",
+          name || ""
+        ),
+        {
+          method: "PUT",
+          body: JSON.stringify(request),
+        }
+      ),
+    onSuccess: (_, variables) => {
+      setSections((prev: Section[]) =>
+        variables.sectionIds.map((id, index) => {
+          const section = prev.find((s) => s.id === id)!;
+          return { ...section, orderIdx: index + 1 };
+        })
+      );
+    },
+    onError: () => {
+      toast.error("섹션 순서 변경에 실패했습니다.");
     },
   });
 
   const initSections = useCallback(
-    async (branch: string, splitMode: string) => {
-      const data = await initSectionsMutation({ branch, splitMode });
-      setClickedSection(data.sections[0]);
-      return data;
+    async (request: InitSectionRequest, callback?: Callback<Sections>) => {
+      await initSectionsMutation(request, {
+        onSuccess: (data) => {
+          callback?.onSuccess?.(data);
+          setClickedSection(data.sections[0]);
+        },
+        onError: (error) => {
+          callback?.onError?.(error);
+        },
+      });
     },
     [initSectionsMutation]
   );
@@ -180,16 +245,34 @@ const SectionStateManager = ({
   }, []);
 
   // 섹션 추가
-  const createSection = useCallback((title: string, content: string | null) => {
-    console.log(`${title}\n ${content} 섹션 추가됨`);
-  }, []);
+  const createSection = useCallback(
+    (request: CreateSectionRequest, callback?: Callback<Section>) => {
+      addSectionMutation(request, {
+        onSuccess: (data) => {
+          callback?.onSuccess?.(data);
+        },
+        onError: (error) => {
+          callback?.onError?.(error);
+        },
+      });
+    },
+    [addSectionMutation]
+  );
 
   // 순서 변경
-  const updateSectionOrder = useCallback((reorderedSections: Section[]) => {
-    setSections(reorderedSections);
-    console.log("순서 변경됨:", reorderedSections);
-    // TODO: API 호출로 순서 저장
-  }, []);
+  const updateSectionReorder = useCallback(
+    (request: ReorderSectionRequest, callback?: Callback<void>) => {
+      reorderSectionsMutation(request, {
+        onSuccess: () => {
+          callback?.onSuccess?.();
+        },
+        onError: (error) => {
+          callback?.onError?.(error);
+        },
+      });
+    },
+    [reorderSectionsMutation]
+  );
 
   // 섹션 내용 수정
   const updateSectionContent = useCallback(
@@ -233,11 +316,11 @@ const SectionStateManager = ({
         clickedSection,
         clickSection,
         createSection,
-        updateSectionOrder,
+        initSections,
+        updateSectionReorder,
         updateSectionContent,
         deleteSection,
         resetSection,
-        initSections,
         isLoading,
       }}
     >

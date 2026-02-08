@@ -22,6 +22,7 @@ import deleteIcon from "@assets/images/delete.svg";
 
 import { Section } from "@src/types/section";
 import { useSection } from "@src/hooks/useSection";
+import toast from "react-hot-toast";
 
 interface SortableItemProps {
   section: Section;
@@ -77,7 +78,7 @@ const SortableItem = ({ section, isActive }: SortableItemProps) => {
 };
 
 const DragableSection = () => {
-  const { sections, clickedSection, updateSectionOrder } = useSection();
+  const { sections, clickedSection, updateSectionReorder } = useSection();
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -101,7 +102,18 @@ const DragableSection = () => {
     const newIndex = sections.findIndex((item) => item.id === over.id);
 
     const reorderedSections = arrayMove(sections, oldIndex, newIndex);
-    updateSectionOrder(reorderedSections);
+
+    updateSectionReorder(
+      {
+        sectionIds: reorderedSections.map((s) => s.id as number),
+      },
+      {
+        onError: () => {
+          toast.error("섹션 순서 변경에 실패했습니다.");
+          arrayMove(sections, newIndex, oldIndex);
+        },
+      }
+    );
   };
 
   return (

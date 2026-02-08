@@ -1,13 +1,16 @@
 import { useState, useMemo, useCallback } from "react";
+import toast from "react-hot-toast";
 
 import styles from "./InitSectionModal.module.scss";
+
+import { InitSectionRequest } from "@src/types/request/repository";
+
+import { useBranch } from "@src/hooks/useBranch";
+import { useSection } from "@src/hooks/useSection";
 
 import Modal from "@src/components/common/Modal";
 import Select from "@src/components/common/Select";
 import LoadingButton from "@src/components/common/LoadingButton";
-
-import { useBranch } from "@src/hooks/useBranch";
-import { useSection } from "@src/hooks/useSection";
 
 interface InitSectionProps {
   isOpen: boolean;
@@ -68,12 +71,22 @@ const InitSection = ({
   const handleCreateSection = useCallback(async () => {
     setIsLoading(true);
 
-    try {
-      await initSections(effectiveBranch, selectedMode.value);
-      onComplete();
-    } finally {
-      setIsLoading(false);
-    }
+    initSections(
+      {
+        branch: effectiveBranch,
+        splitMode: selectedMode.value as InitSectionRequest["splitMode"],
+      },
+      {
+        onSuccess: () => {
+          onComplete();
+        },
+        onError: () => {
+          toast.error("섹션 생성에 실패했습니다.");
+        },
+      }
+    );
+
+    setIsLoading(false);
   }, [initSections, effectiveBranch, selectedMode.value, onComplete]);
 
   return (

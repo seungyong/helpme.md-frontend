@@ -1,17 +1,34 @@
 import { createContext, useContext } from "react";
-import { Section } from "@src/types/section";
+
+import { Section, Sections } from "@src/types/section";
+import {
+  CreateSectionRequest,
+  InitSectionRequest,
+  ReorderSectionRequest,
+} from "@src/types/request/repository";
+import { Callback } from "@src/types/request/common";
 
 export interface SectionContextType {
   sections: Section[];
   fullContent: string;
   clickedSection: Section;
   clickSection: (section: Section) => void;
-  createSection: (title: string, content: string | null) => void;
-  updateSectionOrder: (reorderedSections: Section[]) => void;
+
+  createSection: (
+    request: CreateSectionRequest,
+    callback?: Callback<Section>
+  ) => void;
+  initSections: (
+    request: InitSectionRequest,
+    callback?: Callback<Sections>
+  ) => void;
+  updateSectionReorder: (
+    request: ReorderSectionRequest,
+    callback?: Callback<void>
+  ) => void;
   updateSectionContent: (sectionId: string | number, content: string) => void;
   deleteSection: (sectionId: string | number) => void;
   resetSection: (splitMode: string) => void;
-  initSections: (branch: string, splitMode: string) => void;
   isLoading: boolean;
 }
 

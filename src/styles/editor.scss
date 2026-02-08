@@ -1,0 +1,30 @@
+@use "styles/mixin" as *;
+
+.w-md-editor-text {
+  height: auto;
+  min-height: 100% !important;
+}
+
+.w-md-editor-toolbar img {
+  width: 1rem;
+  height: 1rem;
+}
+
+.w-md-editor-toolbar svg {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+.w-md-editor-toolbar button[aria-label="Merge sections"] img,
+.w-md-editor-toolbar button[aria-label="Edit sections"] img {
+  width: 1.125rem !important;
+  height: 1.125rem !important;
+}
+
+@include max-large {
+  .w-md-editor-content,
+  .wmde-markdown-var {
+    height: auto !important;
+    min-height: 100% !important;
+  }
+}
