@@ -11,23 +11,16 @@ import Header from "@src/components/repo/Header";
 import DragableSection from "@src/components/repo/DragableSection";
 import Section from "@src/components/repo/Section";
 import MarkdownEditor from "@src/components/repo/MarkdownEditor";
-
-const mockRepo: Repository = {
-  name: "dronedronedronedronedronedronedronedrone",
-  owner: "seungyong",
-  avatarUrl: "https://avatars.githubusercontent.com/u/44765636?v=4",
-  defaultBranch: "develop",
-};
+import { apiClient } from "@src/utils/apiClient";
+import { APIEndpoint } from "@src/types/APIEndpoint";
 
 const RepoDetailPage = () => {
   const { owner, name } = useParams();
 
   const { data: repo } = useQuery<Repository>({
     queryKey: ["repo", owner, name],
-    queryFn: () => {
-      return Promise.resolve(mockRepo);
-      // apiClient<Repository>(`${APIEndpoint.REPOSITORIES}/${owner}/${name}`),
-    },
+    queryFn: () =>
+      apiClient<Repository>(`${APIEndpoint.REPOSITORIES}/${owner}/${name}`),
     enabled: !!owner && !!name,
     refetchOnWindowFocus: false,
   });
