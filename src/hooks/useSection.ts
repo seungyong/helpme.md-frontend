@@ -11,6 +11,7 @@ export interface SectionContextType {
   updateSectionContent: (sectionId: string | number, content: string) => void;
   deleteSection: (sectionId: string | number) => void;
   resetSection: (splitMode: string) => void;
+  initSections: (branch: string, splitMode: string) => void;
   isLoading: boolean;
 }
 

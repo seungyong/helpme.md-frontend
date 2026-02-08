@@ -1,5 +1,12 @@
-import { useState, ReactNode, useCallback, useMemo, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import {
+  useState,
+  ReactNode,
+  useCallback,
+  useMemo,
+  useEffect,
+  useRef,
+} from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 
@@ -20,6 +27,7 @@ export const SectionProvider = ({ children }: SectionProviderProps) => {
   const { owner, name } = useParams();
   const [isManualModalOpen, setIsManualModalOpen] = useState<boolean>(false);
   const [hasHandledError, setHasHandledError] = useState<boolean>(false);
+  const debounce = useRef<NodeJS.Timeout | null>(null);
 
   const {
     data: sections,
@@ -58,19 +66,34 @@ export const SectionProvider = ({ children }: SectionProviderProps) => {
   }, []);
 
   const handleCloseManualModal = useCallback(async () => {
-    if (shouldShowInitModal) {
-      return;
+    if (debounce.current) {
+      clearTimeout(debounce.current);
     }
 
-    try {
-      await refetch({ throwOnError: true });
-      setHasHandledError(true);
-    } catch {
-      toast.error("생성에 실패했습니다.");
-    } finally {
-      setIsManualModalOpen(false);
-    }
-  }, [shouldShowInitModal, refetch]);
+    debounce.current = setTimeout(async () => {
+      try {
+        await refetch({ throwOnError: true });
+        setHasHandledError(true);
+      } catch {
+        if (
+          error instanceof ApiError &&
+          error.errorCode === ERROR_CODE.NOT_FOUND_SECTIONS
+        ) {
+          return;
+        }
+
+        toast.error("생성에 실패했습니다.");
+      } finally {
+        setIsManualModalOpen(false);
+      }
+    }, 1000);
+
+    return () => {
+      if (debounce.current) {
+        clearTimeout(debounce.current);
+      }
+    };
+  }, [error, refetch]);
 
   useEffect(() => {
     if (isError && !(error?.errorCode === ERROR_CODE.NOT_FOUND_SECTIONS)) {
@@ -80,21 +103,19 @@ export const SectionProvider = ({ children }: SectionProviderProps) => {
   }, [isError, error, navigate]);
 
   return (
-    <>
+    <SectionStateManager
+      key={isSuccess ? "success" : "none"}
+      initialSections={sections || []}
+      isLoading={isLoading}
+      onOpenManualModal={handleOpenManualModal}
+    >
       <InitSection
         isOpen={isInitModalOpen}
         onComplete={handleCloseManualModal}
         onClose={isInitModalOpen ? handleCloseManualModal : undefined}
       />
-      <SectionStateManager
-        key={isSuccess ? "success" : "none"}
-        initialSections={sections || []}
-        isLoading={isLoading}
-        onOpenManualModal={handleOpenManualModal}
-      >
-        {children}
-      </SectionStateManager>
-    </>
+      {children}
+    </SectionStateManager>
   );
 };
 
@@ -109,6 +130,7 @@ const SectionStateManager = ({
   children: React.ReactNode;
   onOpenManualModal: () => void;
 }) => {
+  const { owner, name } = useParams();
   const [sections, setSections] = useState<Section[]>(initialSections);
   const [clickedSection, setClickedSection] = useState<Section>(
     initialSections[0]
@@ -117,6 +139,37 @@ const SectionStateManager = ({
   const fullContent = useMemo(() => {
     return sections?.map((section) => section.content || "").join("\n\n") || "";
   }, [sections]);
+
+  const { mutateAsync: initSectionsMutation } = useMutation<
+    Sections,
+    ApiError,
+    { branch: string; splitMode: string }
+  >({
+    mutationFn: ({ branch, splitMode }) =>
+      apiClient<Sections>(
+        generateAPIEndpoint(
+          APIEndpoint.SECTIONS_INIT,
+          owner || "",
+          name || ""
+        ) + `?branch=${branch}&splitMode=${splitMode}`,
+        {
+          method: "PUT",
+        }
+      ),
+    onSuccess: (data) => {
+      setSections(data.sections);
+    },
+    onError: (error) => {
+      toast.error(error.message || "섹션 초기화에 실패했습니다.");
+    },
+  });
+
+  const initSections = useCallback(
+    async (branch: string, splitMode: string) => {
+      return await initSectionsMutation({ branch, splitMode });
+    },
+    [initSectionsMutation]
+  );
 
   const clickSection = useCallback((section: Section) => {
     console.log("Clicked section:", section);
@@ -181,6 +234,7 @@ const SectionStateManager = ({
         updateSectionContent,
         deleteSection,
         resetSection,
+        initSections,
         isLoading,
       }}
     >

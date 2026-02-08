@@ -6,6 +6,8 @@ export enum APIEndpoint {
   INSTALLATIONS = "/oauth2/installations",
   REPOSITORIES = "/repos",
   SECTIONS = "/repos/:owner/:name/sections",
+  SECTIONS_INIT = "/repos/:owner/:name/sections/init",
+  BRANCHES = "/repos/:owner/:name/branches",
   SSE = "/sse",
   GENERATE = "/repos/:owner/:name/generate/sse",
   GENERATE_FALLBACK = "/fallback/generate/:taskId",

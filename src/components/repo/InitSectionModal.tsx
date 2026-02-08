@@ -7,6 +7,7 @@ import Select from "@src/components/common/Select";
 import LoadingButton from "@src/components/common/LoadingButton";
 
 import { useBranch } from "@src/hooks/useBranch";
+import { useSection } from "@src/hooks/useSection";
 
 interface InitSectionProps {
   isOpen: boolean;
@@ -43,6 +44,7 @@ const InitSection = ({
     sectionMode[0]
   );
 
+  const { initSections } = useSection();
   const { branches, initialBranch, isSuccess } = useBranch();
   const [selectedBranch, setSelectedBranch] = useState<string>(initialBranch);
 
@@ -63,15 +65,16 @@ const InitSection = ({
     setSelectedBranch(value);
   }, []);
 
-  const handleCreateSection = useCallback(() => {
+  const handleCreateSection = useCallback(async () => {
     setIsLoading(true);
-    console.log("섹션 생성", effectiveBranch, selectedMode);
-    // TODO: API 호출하여 섹션 생성 후 모달 닫기
-    setTimeout(() => {
-      setIsLoading(false);
+
+    try {
+      await initSections(effectiveBranch, selectedMode.value);
       onComplete();
-    }, 1000);
-  }, [effectiveBranch, selectedMode, onComplete]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [initSections, effectiveBranch, selectedMode.value, onComplete]);
 
   return (
     <Modal isOpen={isOpen} onRequestClose={onClose}>
