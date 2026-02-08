@@ -65,35 +65,30 @@ export const SectionProvider = ({ children }: SectionProviderProps) => {
     setIsManualModalOpen(true);
   }, []);
 
-  const handleCloseManualModal = useCallback(async () => {
-    if (debounce.current) {
-      clearTimeout(debounce.current);
-    }
+  const handleCompleteInitSection = useCallback(async () => {
+    if (debounce.current) clearTimeout(debounce.current);
 
     debounce.current = setTimeout(async () => {
       try {
         await refetch({ throwOnError: true });
         setHasHandledError(true);
-      } catch {
-        if (
-          error instanceof ApiError &&
-          error.errorCode === ERROR_CODE.NOT_FOUND_SECTIONS
-        ) {
-          return;
-        }
-
+      } catch (e) {
+        const err = e instanceof ApiError ? e : null;
+        if (err?.errorCode === ERROR_CODE.NOT_FOUND_SECTIONS) return;
         toast.error("생성에 실패했습니다.");
       } finally {
         setIsManualModalOpen(false);
+        debounce.current = null;
       }
-    }, 1000);
+    }, 300);
+  }, [refetch]);
 
-    return () => {
-      if (debounce.current) {
-        clearTimeout(debounce.current);
-      }
-    };
-  }, [error, refetch]);
+  const handleRequestCloseInitModal = useCallback(() => {
+    if (shouldShowInitModal && !isManualModalOpen) {
+      return;
+    }
+    setIsManualModalOpen(false);
+  }, [shouldShowInitModal, isManualModalOpen]);
 
   useEffect(() => {
     if (isError && !(error?.errorCode === ERROR_CODE.NOT_FOUND_SECTIONS)) {
@@ -101,6 +96,12 @@ export const SectionProvider = ({ children }: SectionProviderProps) => {
       navigate("/", { replace: true });
     }
   }, [isError, error, navigate]);
+
+  useEffect(() => {
+    return () => {
+      if (debounce.current) clearTimeout(debounce.current);
+    };
+  }, []);
 
   return (
     <SectionStateManager
@@ -111,8 +112,8 @@ export const SectionProvider = ({ children }: SectionProviderProps) => {
     >
       <InitSection
         isOpen={isInitModalOpen}
-        onComplete={handleCloseManualModal}
-        onClose={isInitModalOpen ? handleCloseManualModal : undefined}
+        onComplete={handleCompleteInitSection}
+        onClose={handleRequestCloseInitModal}
       />
       {children}
     </SectionStateManager>
@@ -166,7 +167,9 @@ const SectionStateManager = ({
 
   const initSections = useCallback(
     async (branch: string, splitMode: string) => {
-      return await initSectionsMutation({ branch, splitMode });
+      const data = await initSectionsMutation({ branch, splitMode });
+      setClickedSection(data.sections[0]);
+      return data;
     },
     [initSectionsMutation]
   );

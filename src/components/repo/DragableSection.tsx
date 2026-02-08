@@ -25,9 +25,10 @@ import { useSection } from "@src/hooks/useSection";
 
 interface SortableItemProps {
   section: Section;
+  isActive: boolean;
 }
 
-const SortableItem = ({ section }: SortableItemProps) => {
+const SortableItem = ({ section, isActive }: SortableItemProps) => {
   const { deleteSection, clickSection } = useSection();
   const {
     attributes,
@@ -58,7 +59,7 @@ const SortableItem = ({ section }: SortableItemProps) => {
     <div
       ref={setNodeRef}
       style={style}
-      className={styles.component}
+      className={`${styles.component} ${isActive ? styles.active : ""}`}
       {...attributes}
       {...listeners}
       onClick={handleClick}
@@ -76,7 +77,7 @@ const SortableItem = ({ section }: SortableItemProps) => {
 };
 
 const DragableSection = () => {
-  const { sections, updateSectionOrder } = useSection();
+  const { sections, clickedSection, updateSectionOrder } = useSection();
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -115,7 +116,11 @@ const DragableSection = () => {
       >
         <div className={styles.dragableComponent}>
           {sections.map((section) => (
-            <SortableItem key={section.id} section={section} />
+            <SortableItem
+              key={section.id}
+              section={section}
+              isActive={clickedSection?.id === section.id}
+            />
           ))}
         </div>
       </SortableContext>
