@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef, useMemo } from "react";
 import MDEditor, { commands } from "@uiw/react-md-editor";
+import toast from "react-hot-toast";
 
 import styles from "./MarkdownEditor.module.scss";
 
@@ -8,7 +9,6 @@ import EditIcon from "@assets/images/edit.svg";
 import CopyIcon from "@assets/images/copy.svg";
 
 import { useSection } from "@src/hooks/useSection";
-import toast from "react-hot-toast";
 
 const MarkdownEditor = () => {
   const { fullContent, clickedSection, updateSectionContent } = useSection();

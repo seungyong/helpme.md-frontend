@@ -22,14 +22,9 @@
 }
 
 @include max-large {
-  .w-md-editor:not(.w-md-editor-fullscreen) {
-    min-height: min(60dvh, 28rem) !important;
-    height: auto !important;
-  }
-
   .w-md-editor:not(.w-md-editor-fullscreen) .w-md-editor-content,
   .w-md-editor:not(.w-md-editor-fullscreen) .wmde-markdown-var {
-    min-height: min(50dvh, 22rem) !important;
+    min-height: min(50dvh, 44rem) !important;
     height: auto !important;
   }
 

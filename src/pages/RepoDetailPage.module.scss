@@ -1,5 +1,4 @@
 .main {
-  height: calc(100vh - 4.25rem);
   padding: 0.9375rem 0;
 
   @include max-large {
@@ -13,7 +12,6 @@
     height: 100%;
 
     .content {
-      overflow-y: hidden;
       display: grid;
       grid-template-columns: 17.5rem minmax(0, 1fr);
       gap: 0.9375rem;
@@ -47,18 +45,6 @@
         display: flex;
         flex-direction: column;
         gap: 0.9375rem;
-
-        @include max-large {
-          gap: 25px;
-          overflow: initial !important;
-        }
-
-        /* 에디터 열: 모바일에서 최소 높이 보장 */
-        &:last-child {
-          @include max-large {
-            min-height: min(65vh, 28rem);
-          }
-        }
       }
     }
   }

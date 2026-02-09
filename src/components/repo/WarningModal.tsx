@@ -16,13 +16,10 @@ interface WarningModalProps {
   description: ReactNode;
   cancelButtonText: string;
   confirmButtonText: string;
-  /** 현재 선택된 브랜치(표시·전달용). useBranch의 effectiveBranch 권장 */
   initialBranch: string;
   onSelectBranch: (branch: string) => void;
   onCancel: () => void;
   onConfirm: () => void;
-  /** 브랜치 데이터 로드 완료 여부. false면 확인 버튼 비활성화 */
-  isBranchReady?: boolean;
 }
 
 const WarningModal = ({

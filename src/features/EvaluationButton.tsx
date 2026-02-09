@@ -72,7 +72,7 @@ const EvaluationButton = () => {
 
     listen<Evaluation>({
       onSuccess: () => {
-        showResult();
+        closeModalAndReset();
       },
       onError: () => {
         setIsLoading(false);
@@ -89,18 +89,10 @@ const EvaluationButton = () => {
     return queryClient.getQueryData<string>([...queryKey, "taskId"]);
   }, [queryClient, queryKey]);
 
-  const getEvaluation = useCallback(() => {
-    return queryClient.getQueryData<Evaluation>(queryKey);
-  }, [queryClient, queryKey]);
-
-  const showResult = useCallback(() => {
-    const evaluation = getEvaluation();
-    if (evaluation) {
-      console.log(evaluation);
-    }
-
+  const closeModalAndReset = useCallback(() => {
     setIsLoading(false);
-  }, [getEvaluation]);
+    setIsOpen(false);
+  }, []);
 
   const handleFallback = useCallback(() => {
     const taskId = queryClient.getQueryData<string>([...queryKey, "taskId"]);
@@ -112,14 +104,14 @@ const EvaluationButton = () => {
 
     fallbackMutation(taskId, {
       onSuccess: () => {
-        showResult();
+        closeModalAndReset();
       },
       onError: () => {
         toast.error("평가에 실패했습니다.");
         setIsLoading(false);
       },
     });
-  }, [queryClient, queryKey, fallbackMutation, showResult]);
+  }, [queryClient, queryKey, fallbackMutation, closeModalAndReset]);
 
   const handleConfirm = () => {
     setIsLoading(true);
@@ -132,6 +124,13 @@ const EvaluationButton = () => {
     }
 
     evaluateMutation(taskId, {
+      onSuccess: () => {
+        toast.loading("평가 중입니다...", {
+          duration: Infinity,
+        });
+
+        setIsOpen(false);
+      },
       onError: () => {
         handleFallback();
       },
@@ -151,6 +150,12 @@ const EvaluationButton = () => {
       });
     };
   }, [queryClient, queryKey]);
+
+  useEffect(() => {
+    return () => {
+      toast.dismiss();
+    };
+  }, []);
 
   return (
     <>

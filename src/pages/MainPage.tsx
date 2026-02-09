@@ -38,7 +38,9 @@ const MainPage = () => {
 
   const handleGithubLogin = () => {
     sessionStorage.setItem("redirectUrl", "/repo/select");
-    window.location.href = `${import.meta.env.VITE_API_URL}${APIEndpoint.OAUTH2_LOGIN}`;
+    window.location.replace(
+      `${import.meta.env.VITE_API_URL}${APIEndpoint.OAUTH2_LOGIN}`
+    );
   };
 
   const howToReads = [

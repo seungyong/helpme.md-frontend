@@ -5,14 +5,16 @@ import styles from "./RepoDetailPage.module.scss";
 
 import { SectionProvider } from "@src/providers/SectionProvider";
 
+import { apiClient } from "@src/utils/apiClient";
+
 import { Repository } from "@src/types/repository";
+import { APIEndpoint } from "@src/types/APIEndpoint";
 
 import Header from "@src/components/repo/Header";
 import DragableSection from "@src/components/repo/DragableSection";
 import Section from "@src/components/repo/Section";
 import MarkdownEditor from "@src/components/repo/MarkdownEditor";
-import { apiClient } from "@src/utils/apiClient";
-import { APIEndpoint } from "@src/types/APIEndpoint";
+import EvaluationResult from "@src/components/repo/EvaluationResult";
 
 const RepoDetailPage = () => {
   const { owner, name } = useParams();
@@ -41,6 +43,7 @@ const RepoDetailPage = () => {
                 <div className={styles.item}>
                   <p className="text-emphasis">Editor</p>
                   <MarkdownEditor />
+                  <EvaluationResult />
                 </div>
               </div>
             </>
