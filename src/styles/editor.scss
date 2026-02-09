@@ -22,9 +22,25 @@
 }
 
 @include max-large {
-  .w-md-editor-content,
-  .wmde-markdown-var {
+  .w-md-editor:not(.w-md-editor-fullscreen) {
+    min-height: min(60dvh, 28rem) !important;
     height: auto !important;
-    min-height: 100% !important;
+  }
+
+  .w-md-editor:not(.w-md-editor-fullscreen) .w-md-editor-content,
+  .w-md-editor:not(.w-md-editor-fullscreen) .wmde-markdown-var {
+    min-height: min(50dvh, 22rem) !important;
+    height: auto !important;
+  }
+
+  .w-md-editor-fullscreen {
+    height: 100dvh !important;
+    min-height: 100dvh !important;
+  }
+
+  .w-md-editor-fullscreen .w-md-editor-content,
+  .w-md-editor-fullscreen .wmde-markdown-var {
+    height: 100% !important;
+    min-height: 0 !important;
   }
 }

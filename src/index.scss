@@ -42,7 +42,8 @@ body {
   background-color: $background-elevated-color;
 
   input {
-    margin-right: 0.5rem;
+    width: 100%;
+    padding-right: 0.5rem;
     color: $text-color;
     outline: none;
 

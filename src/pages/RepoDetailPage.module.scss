@@ -52,6 +52,13 @@
           gap: 25px;
           overflow: initial !important;
         }
+
+        /* 에디터 열: 모바일에서 최소 높이 보장 */
+        &:last-child {
+          @include max-large {
+            min-height: min(65vh, 28rem);
+          }
+        }
       }
     }
   }
