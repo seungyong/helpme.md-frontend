@@ -1,5 +1,5 @@
 export interface Section {
-  id: string | number;
+  id: number;
   title: string;
   content: string;
   orderIdx: number;

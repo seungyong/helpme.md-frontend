@@ -53,7 +53,7 @@ const SortableItem = ({ section, isActive }: SortableItemProps) => {
 
   const handleDeleteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    deleteSection(section.id);
+    deleteSection({ sectionId: section.id });
   };
 
   return (

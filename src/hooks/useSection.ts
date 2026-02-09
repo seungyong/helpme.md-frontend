@@ -3,8 +3,10 @@ import { createContext, useContext } from "react";
 import { Section, Sections } from "@src/types/section";
 import {
   CreateSectionRequest,
+  DeleteSectionRequest,
   InitSectionRequest,
   ReorderSectionRequest,
+  UpdateSectionContentRequest,
 } from "@src/types/request/repository";
 import { Callback } from "@src/types/request/common";
 
@@ -12,7 +14,9 @@ export interface SectionContextType {
   sections: Section[];
   fullContent: string;
   clickedSection: Section;
+  isLoading: boolean;
   clickSection: (section: Section) => void;
+  resetSection: (splitMode: string) => void;
 
   createSection: (
     request: CreateSectionRequest,
@@ -26,10 +30,14 @@ export interface SectionContextType {
     request: ReorderSectionRequest,
     callback?: Callback<void>
   ) => void;
-  updateSectionContent: (sectionId: string | number, content: string) => void;
-  deleteSection: (sectionId: string | number) => void;
-  resetSection: (splitMode: string) => void;
-  isLoading: boolean;
+  updateSectionContent: (
+    request: UpdateSectionContentRequest,
+    callback?: Callback<void>
+  ) => void;
+  deleteSection: (
+    request: DeleteSectionRequest,
+    callback?: Callback<void>
+  ) => void;
 }
 
 export const SectionContext = createContext<SectionContextType | undefined>(

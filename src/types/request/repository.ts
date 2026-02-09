@@ -11,3 +11,12 @@ export interface InitSectionRequest {
 export interface ReorderSectionRequest {
   sectionIds: number[];
 }
+
+export interface UpdateSectionContentRequest {
+  sectionId: number;
+  content: string;
+}
+
+export interface DeleteSectionRequest {
+  sectionId: number;
+}

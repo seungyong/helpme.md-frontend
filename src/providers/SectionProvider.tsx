@@ -15,8 +15,10 @@ import { ApiError, ERROR_CODE } from "@src/types/error";
 import { APIEndpoint, generateAPIEndpoint } from "@src/types/APIEndpoint";
 import {
   CreateSectionRequest,
+  DeleteSectionRequest,
   InitSectionRequest,
   ReorderSectionRequest,
+  UpdateSectionContentRequest,
 } from "@src/types/request/repository";
 import { Callback } from "@src/types/request/common";
 
@@ -194,13 +196,28 @@ const SectionStateManager = ({
     },
   });
 
+  const initSections = useCallback(
+    async (request: InitSectionRequest, callback?: Callback<Sections>) => {
+      await initSectionsMutation(request, {
+        onSuccess: (data) => {
+          callback?.onSuccess?.(data);
+          setClickedSection(data.sections[0]);
+        },
+        onError: (error) => {
+          callback?.onError?.(error);
+        },
+      });
+    },
+    [initSectionsMutation]
+  );
+
   const { mutate: reorderSectionsMutation } = useMutation<
-    Sections,
+    void,
     ApiError,
     ReorderSectionRequest
   >({
     mutationFn: (request) =>
-      apiClient<Sections>(
+      apiClient<void>(
         generateAPIEndpoint(
           APIEndpoint.SECTIONS_REORDER,
           owner || "",
@@ -224,25 +241,64 @@ const SectionStateManager = ({
     },
   });
 
-  const initSections = useCallback(
-    async (request: InitSectionRequest, callback?: Callback<Sections>) => {
-      await initSectionsMutation(request, {
-        onSuccess: (data) => {
-          callback?.onSuccess?.(data);
-          setClickedSection(data.sections[0]);
-        },
-        onError: (error) => {
-          callback?.onError?.(error);
-        },
-      });
+  const { mutate: updateSectionContentMutation } = useMutation<
+    void,
+    ApiError,
+    UpdateSectionContentRequest
+  >({
+    mutationFn: (request) =>
+      apiClient<void>(
+        generateAPIEndpoint(
+          APIEndpoint.SECTIONS_CONTENT,
+          owner || "",
+          name || ""
+        ),
+        {
+          method: "PATCH",
+          body: JSON.stringify(request),
+        }
+      ),
+    onSuccess: (_, variables) => {
+      setSections((prev) =>
+        prev.map((section) =>
+          section.id === variables.sectionId
+            ? { ...section, content: variables.content }
+            : section
+        )
+      );
     },
-    [initSectionsMutation]
-  );
+  });
 
-  const clickSection = useCallback((section: Section) => {
-    console.log("Clicked section:", section);
-    setClickedSection(section);
-  }, []);
+  const { mutate: deleteSectionMutation } = useMutation<
+    void,
+    ApiError,
+    DeleteSectionRequest
+  >({
+    mutationFn: (request) =>
+      apiClient<void>(
+        generateAPIEndpoint(
+          APIEndpoint.SECTIONS_DELETE,
+          owner || "",
+          name || "",
+          request.sectionId.toString()
+        ),
+        {
+          method: "DELETE",
+        }
+      ),
+    onSuccess: (_, variables) => {
+      setSections((prev) =>
+        prev.filter((section) => section.id !== variables.sectionId)
+      );
+
+      if (clickedSection.id === variables.sectionId) {
+        setClickedSection(sections[0]);
+      }
+    },
+    onError: () => {
+      toast.error("섹션 삭제에 실패했습니다.");
+    },
+  });
 
   // 섹션 추가
   const createSection = useCallback(
@@ -276,34 +332,44 @@ const SectionStateManager = ({
 
   // 섹션 내용 수정
   const updateSectionContent = useCallback(
-    (sectionId: string | number, content: string) => {
-      setSections((prev) =>
-        prev.map((section) =>
-          section.id === sectionId ? { ...section, content } : section
-        )
-      );
-      console.log(`섹션 ${sectionId} 내용 변경됨`);
-      // TODO: API 호출로 내용 저장
+    (request: UpdateSectionContentRequest, callback?: Callback<void>) => {
+      updateSectionContentMutation(request, {
+        onSuccess: () => {
+          callback?.onSuccess?.();
+        },
+        onError: (error) => {
+          callback?.onError?.(error);
+        },
+      });
     },
-    []
+    [updateSectionContentMutation]
   );
 
   // 섹션 삭제
   const deleteSection = useCallback(
-    (sectionId: string | number) => {
+    (request: DeleteSectionRequest, callback?: Callback<void>) => {
       if (sections.length === 1) {
         toast.error("섹션은 최소 1개 이상 유지해야 합니다.");
         return;
       }
 
-      setSections((prev) => prev.filter((section) => section.id !== sectionId));
-      console.log(`섹션 ${sectionId} 삭제됨`);
-      // TODO: API 호출로 삭제
+      deleteSectionMutation(request, {
+        onSuccess: () => {
+          callback?.onSuccess?.();
+        },
+        onError: (error) => {
+          callback?.onError?.(error);
+        },
+      });
     },
-    [sections.length]
+    [sections.length, deleteSectionMutation]
   );
 
-  // 섹션 리셋 (원본으로 되돌리기)
+  const clickSection = useCallback((section: Section) => {
+    setClickedSection(section);
+  }, []);
+
+  // 섹션 리셋 모달
   const resetSection = useCallback(() => {
     onOpenManualModal();
   }, [onOpenManualModal]);

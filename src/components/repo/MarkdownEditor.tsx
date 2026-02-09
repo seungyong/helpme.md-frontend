@@ -18,7 +18,7 @@ const MarkdownEditor = () => {
   const [content, setContent] = useState<string>(clickedSection?.content || "");
 
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const prevSectionIdRef = useRef<string | number>(clickedSection?.id);
+  const prevSectionIdRef = useRef<number>(clickedSection?.id);
 
   useEffect(() => {
     // 섹션이 실제로 변경되었는지 확인
@@ -29,7 +29,7 @@ const MarkdownEditor = () => {
           clearTimeout(saveTimeoutRef.current);
         }
 
-        updateSectionContent(prevSectionIdRef.current, content);
+        updateSectionContent({ sectionId: prevSectionIdRef.current, content });
       }
 
       // 새 섹션으로 전환
@@ -57,7 +57,7 @@ const MarkdownEditor = () => {
     }
 
     saveTimeoutRef.current = setTimeout(() => {
-      updateSectionContent(clickedSection.id, content);
+      updateSectionContent({ sectionId: clickedSection.id, content });
       setIsDirty(false);
     }, 500);
 
