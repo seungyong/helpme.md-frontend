@@ -21,14 +21,13 @@ import LoadingButton from "@src/components/common/LoadingButton";
 import WarningModal from "@src/components/repo/WarningModal";
 
 const GenerationButton = () => {
-  const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
   const { owner, name } = useParams();
   const { initialBranch } = useBranch();
-  const { listen } = useSse(
-    ["generation", owner || "", name || ""],
-    "completion-generate"
-  );
+  const queryKey = ["generation", owner || "", name || ""];
+  const { listen } = useSse(queryKey, "completion-generate");
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [selectedBranch, setSelectedBranch] = useState<string>("");
@@ -52,18 +51,13 @@ const GenerationButton = () => {
     setSelectedBranch(branch);
   };
 
-  const showResult = (data: Sections) => {
+  const showResult = useCallback((data: Sections) => {
     console.log(data);
     setIsLoading(false);
-  };
+  }, []);
 
   const handleFallback = useCallback(async () => {
-    const taskId = queryClient.getQueryData([
-      "generation",
-      owner,
-      name,
-      "taskId",
-    ]) as string;
+    const taskId = queryClient.getQueryData<string>([...queryKey, "taskId"]);
 
     if (!taskId) {
       toast.error("생성에 실패했습니다.");
@@ -82,33 +76,35 @@ const GenerationButton = () => {
       toast.error("생성에 실패했습니다.");
       setIsLoading(false);
     }
-  }, [owner, name, queryClient]);
+  }, [queryClient, queryKey]);
 
   useEffect(() => {
-    const error = queryClient.getQueryData([
-      "generation",
-      owner,
-      name,
-      "error",
-    ]) as ApiError;
+    const error = queryClient.getQueryData<ApiError>([...queryKey, "error"]);
 
     if (error) {
       handleFallback();
       return;
     }
 
-    const data = queryClient.getQueryData(["generation", owner, name]);
+    const data = queryClient.getQueryData<Sections>(queryKey);
 
     if (data) {
-      showResult(data as Sections);
+      showResult(data);
+      return;
     }
 
     return () => {
       queryClient.removeQueries({
-        queryKey: ["generation", owner, name],
+        queryKey: [...queryKey, "taskId"],
+      });
+      queryClient.removeQueries({
+        queryKey: [...queryKey, "error"],
+      });
+      queryClient.removeQueries({
+        queryKey: queryKey,
       });
     };
-  }, [owner, name, queryClient, handleFallback]);
+  }, [queryClient, queryKey, handleFallback, showResult]);
 
   if (!owner || !name) {
     toast.error("잘못된 접근입니다.");

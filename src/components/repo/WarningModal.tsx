@@ -6,9 +6,11 @@ import { useBranch } from "@src/hooks/useBranch";
 
 import Modal from "@src/components/common/Modal";
 import Select from "@src/components/common/Select";
+import LoadingButton from "../common/LoadingButton";
 
 interface WarningModalProps {
   isOpen: boolean;
+  isLoading: boolean;
   onRequestClose: () => void;
   title: string;
   description: ReactNode;
@@ -25,6 +27,7 @@ interface WarningModalProps {
 
 const WarningModal = ({
   isOpen,
+  isLoading,
   onRequestClose,
   title,
   description,
@@ -70,14 +73,14 @@ const WarningModal = ({
           >
             {cancelButtonText}
           </button>
-          <button
-            type="button"
-            className={`${styles.btn} ${styles.startBtn}`}
+          <LoadingButton
             onClick={onConfirm}
+            isLoading={isLoading}
+            className={`${styles.btn} ${styles.startBtn}`}
             disabled={!isSuccess}
           >
             {confirmButtonText}
-          </button>
+          </LoadingButton>
         </div>
       </div>
     </Modal>

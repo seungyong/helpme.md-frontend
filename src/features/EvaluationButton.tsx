@@ -1,46 +1,162 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useParams } from "react-router-dom";
+import toast from "react-hot-toast";
 
 import styles from "./EvaluationButton.module.scss";
 
 import evaluation from "@assets/images/evaluation.svg";
 
+import { Evaluation } from "@src/types/evaluation";
+import { APIEndpoint, generateAPIEndpoint } from "@src/types/APIEndpoint";
+
 import { useSection } from "@src/hooks/useSection";
 import { useBranch } from "@src/hooks/useBranch";
+import { useSse } from "@src/hooks/useSse";
+import { apiClient } from "@src/utils/apiClient";
 
 import LoadingButton from "@src/components/common/LoadingButton";
 import WarningModal from "@src/components/repo/WarningModal";
 
 const EvaluationButton = () => {
+  const { owner, name } = useParams();
+
+  const queryClient = useQueryClient();
+  const queryKey = useMemo(
+    () => ["evaluation", owner || "", name || ""],
+    [owner, name]
+  );
+  const { listen } = useSse(queryKey, "completion-evaluate-draft");
+
   const { fullContent } = useSection();
   const { initialBranch } = useBranch();
 
+  const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [selectedBranch, setSelectedBranch] = useState<string>("");
+
   const effectiveBranch = useMemo(() => {
     return selectedBranch || initialBranch;
   }, [selectedBranch, initialBranch]);
 
+  const { mutate: fallbackMutation } = useMutation({
+    mutationFn: async (taskId: string) => {
+      return apiClient<Evaluation>(
+        generateAPIEndpoint(APIEndpoint.EVALUATE_FALLBACK, taskId)
+      );
+    },
+  });
+
+  const { mutate: evaluateMutation } = useMutation({
+    mutationFn: async (taskId: string) => {
+      return apiClient<void>(
+        `${generateAPIEndpoint(APIEndpoint.EVALUATE, owner || "", name || "")}?taskId=${taskId}`,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            branch: effectiveBranch,
+            content: fullContent,
+          }),
+        }
+      );
+    },
+  });
+
   const handleCancel = () => {
     setIsLoading(false);
+    setIsOpen(false);
   };
 
   const handleEvaluation = () => {
-    setIsLoading(true);
-  };
+    setIsOpen(true);
 
-  const handleConfirm = () => {
-    setIsLoading(false);
-    console.log(fullContent, effectiveBranch);
+    listen<Evaluation>({
+      onSuccess: () => {
+        showResult();
+      },
+      onError: () => {
+        setIsLoading(false);
+        toast.error("평가에 실패했습니다.");
+      },
+    });
   };
 
   const handleSelectBranch = (branch: string) => {
     setSelectedBranch(branch);
   };
 
+  const getTaskId = useCallback(() => {
+    return queryClient.getQueryData<string>([...queryKey, "taskId"]);
+  }, [queryClient, queryKey]);
+
+  const getEvaluation = useCallback(() => {
+    return queryClient.getQueryData<Evaluation>(queryKey);
+  }, [queryClient, queryKey]);
+
+  const showResult = useCallback(() => {
+    const evaluation = getEvaluation();
+    if (evaluation) {
+      console.log(evaluation);
+    }
+
+    setIsLoading(false);
+  }, [getEvaluation]);
+
+  const handleFallback = useCallback(() => {
+    const taskId = queryClient.getQueryData<string>([...queryKey, "taskId"]);
+
+    if (!taskId) {
+      toast.error("평가에 실패했습니다.");
+      return;
+    }
+
+    fallbackMutation(taskId, {
+      onSuccess: () => {
+        showResult();
+      },
+      onError: () => {
+        toast.error("평가에 실패했습니다.");
+        setIsLoading(false);
+      },
+    });
+  }, [queryClient, queryKey, fallbackMutation, showResult]);
+
+  const handleConfirm = () => {
+    setIsLoading(true);
+
+    const taskId = getTaskId();
+    if (!taskId) {
+      toast.error("평가에 실패했습니다.");
+      setIsLoading(false);
+      return;
+    }
+
+    evaluateMutation(taskId, {
+      onError: () => {
+        handleFallback();
+      },
+    });
+  };
+
+  useEffect(() => {
+    return () => {
+      queryClient.removeQueries({
+        queryKey: [...queryKey, "taskId"],
+      });
+      queryClient.removeQueries({
+        queryKey: [...queryKey, "error"],
+      });
+      queryClient.removeQueries({
+        queryKey: queryKey,
+      });
+    };
+  }, [queryClient, queryKey]);
+
   return (
     <>
       <WarningModal
-        isOpen={isLoading}
+        isOpen={isOpen}
+        isLoading={isLoading}
         onRequestClose={handleCancel}
         title="README 평가"
         description={

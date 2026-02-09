@@ -38,9 +38,8 @@ export const apiClient = async <T>(
       });
     }
 
-    // 응답이 성공한 경우
-    // 204 No Content인 경우 빈 객체 반환
-    if (response.status === 204) {
+    // 응답이 성공한 경우 (Body가 없는 경우)
+    if (response.status === 202 || response.status === 204) {
       return null as T;
     }
 

@@ -11,11 +11,11 @@ export enum APIEndpoint {
   SECTIONS_CONTENT = "/repos/:owner/:name/sections/content",
   SECTIONS_DELETE = "/repos/:owner/:name/sections/:sectionId",
   BRANCHES = "/repos/:owner/:name/branches",
-  SSE = "/sse",
+  SSE = "/sse/subscribe",
   GENERATE = "/repos/:owner/:name/generate/sse",
-  GENERATE_FALLBACK = "/fallback/generate/:taskId",
+  GENERATE_FALLBACK = "/repos/fallback/generate/:taskId",
   EVALUATE = "/repos/:owner/:name/evaluate/draft/sse",
-  EVALUATE_FALLBACK = "/fallback/evaluate/draft/:taskId",
+  EVALUATE_FALLBACK = "/repos/fallback/evaluate/draft/:taskId",
 }
 
 /**
