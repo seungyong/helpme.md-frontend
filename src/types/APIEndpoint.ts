@@ -16,6 +16,7 @@ export enum APIEndpoint {
   GENERATE_FALLBACK = "/repos/fallback/generate/:taskId",
   EVALUATE = "/repos/:owner/:name/evaluate/draft/sse",
   EVALUATE_FALLBACK = "/repos/fallback/evaluate/draft/:taskId",
+  CREATE_PR = "/repos/:owner/:name",
 }
 
 /**

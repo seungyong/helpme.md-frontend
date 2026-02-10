@@ -19,3 +19,7 @@ export interface Repository {
 export interface Branches {
   branches: string[];
 }
+
+export interface PR {
+  htmlUrl: string;
+}

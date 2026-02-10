@@ -1,3 +1,7 @@
 .prBtn {
   @include button-success("fit-content");
 }
+
+.emphasisText {
+  color: $error-color;
+}
