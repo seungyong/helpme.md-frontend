@@ -17,6 +17,7 @@ export interface SectionContextType {
   isLoading: boolean;
   clickSection: (section: Section) => void;
   resetSection: (splitMode: string) => void;
+  refetchSections: (callback?: Callback<void>) => void;
 
   createSection: (
     request: CreateSectionRequest,

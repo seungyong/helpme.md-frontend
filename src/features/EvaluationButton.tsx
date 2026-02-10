@@ -62,10 +62,24 @@ const EvaluationButton = () => {
     },
   });
 
+  const handleSelectBranch = useCallback((branch: string) => {
+    setSelectedBranch(branch);
+  }, []);
+
   const handleCancel = () => {
     setIsLoading(false);
     setIsOpen(false);
+    setSelectedBranch(initialBranch);
   };
+
+  const getTaskId = useCallback(() => {
+    return queryClient.getQueryData<string>([...queryKey, "taskId"]);
+  }, [queryClient, queryKey]);
+
+  const closeModalAndReset = useCallback(() => {
+    setIsLoading(false);
+    setIsOpen(false);
+  }, []);
 
   const handleEvaluation = () => {
     setIsOpen(true);
@@ -81,22 +95,8 @@ const EvaluationButton = () => {
     });
   };
 
-  const handleSelectBranch = (branch: string) => {
-    setSelectedBranch(branch);
-  };
-
-  const getTaskId = useCallback(() => {
-    return queryClient.getQueryData<string>([...queryKey, "taskId"]);
-  }, [queryClient, queryKey]);
-
-  const closeModalAndReset = useCallback(() => {
-    setIsLoading(false);
-    setIsOpen(false);
-  }, []);
-
   const handleFallback = useCallback(() => {
     const taskId = queryClient.getQueryData<string>([...queryKey, "taskId"]);
-
     if (!taskId) {
       toast.error("평가에 실패했습니다.");
       return;

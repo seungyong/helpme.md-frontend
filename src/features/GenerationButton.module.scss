@@ -1,3 +1,11 @@
 .generationBtn {
   @include button-primary("fit-content");
 }
+
+.emphasisText {
+  color: $error-color;
+}
+
+.descriptionText {
+  margin-top: 0.5rem;
+}

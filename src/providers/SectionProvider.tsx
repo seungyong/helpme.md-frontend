@@ -6,7 +6,12 @@ import {
   useEffect,
   useRef,
 } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import {
+  QueryObserverResult,
+  RefetchOptions,
+  useMutation,
+  useQuery,
+} from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 
@@ -30,6 +35,16 @@ import InitSection from "@src/components/repo/InitSectionModal";
 
 interface SectionProviderProps {
   children: ReactNode;
+}
+
+interface SectionStateManagerProps {
+  initialSections: Section[];
+  isLoading: boolean;
+  children: React.ReactNode;
+  onOpenManualModal: () => void;
+  refetch: (
+    options?: RefetchOptions
+  ) => Promise<QueryObserverResult<Section[], ApiError>>;
 }
 
 export const SectionProvider = ({ children }: SectionProviderProps) => {
@@ -113,12 +128,18 @@ export const SectionProvider = ({ children }: SectionProviderProps) => {
     };
   }, []);
 
+  const sectionManagerKey = useMemo(() => {
+    if (!isSuccess || !sections?.length) return isSuccess ? "success" : "none";
+    return `sections-${sections.map((s) => s.id).join("-")}`;
+  }, [isSuccess, sections]);
+
   return (
     <SectionStateManager
-      key={isSuccess ? "success" : "none"}
+      key={sectionManagerKey}
       initialSections={sections || []}
       isLoading={isLoading}
       onOpenManualModal={handleOpenManualModal}
+      refetch={refetch}
     >
       <InitSection
         isOpen={isInitModalOpen}
@@ -135,12 +156,8 @@ const SectionStateManager = ({
   isLoading,
   children,
   onOpenManualModal,
-}: {
-  initialSections: Section[];
-  isLoading: boolean;
-  children: React.ReactNode;
-  onOpenManualModal: () => void;
-}) => {
+  refetch,
+}: SectionStateManagerProps) => {
   const { owner, name } = useParams();
   const [sections, setSections] = useState<Section[]>(initialSections);
   const [clickedSection, setClickedSection] = useState<Section>(
@@ -195,21 +212,6 @@ const SectionStateManager = ({
       toast.error("섹션 초기화에 실패했습니다.");
     },
   });
-
-  const initSections = useCallback(
-    async (request: InitSectionRequest, callback?: Callback<Sections>) => {
-      await initSectionsMutation(request, {
-        onSuccess: (data) => {
-          callback?.onSuccess?.(data);
-          setClickedSection(data.sections[0]);
-        },
-        onError: (error) => {
-          callback?.onError?.(error);
-        },
-      });
-    },
-    [initSectionsMutation]
-  );
 
   const { mutate: reorderSectionsMutation } = useMutation<
     void,
@@ -300,6 +302,34 @@ const SectionStateManager = ({
     },
   });
 
+  const refetchSections = useCallback(
+    (callback?: Callback<void>) => {
+      refetch({ throwOnError: true })
+        .then(() => {
+          callback?.onSuccess?.();
+        })
+        .catch((error) => {
+          callback?.onError?.(error);
+        });
+    },
+    [refetch]
+  );
+
+  const initSections = useCallback(
+    async (request: InitSectionRequest, callback?: Callback<Sections>) => {
+      await initSectionsMutation(request, {
+        onSuccess: (data) => {
+          callback?.onSuccess?.(data);
+          setClickedSection(data.sections[0]);
+        },
+        onError: (error) => {
+          callback?.onError?.(error);
+        },
+      });
+    },
+    [initSectionsMutation]
+  );
+
   // 섹션 추가
   const createSection = useCallback(
     (request: CreateSectionRequest, callback?: Callback<Section>) => {
@@ -381,6 +411,7 @@ const SectionStateManager = ({
         fullContent,
         clickedSection,
         clickSection,
+        refetchSections,
         createSection,
         initSections,
         updateSectionReorder,
