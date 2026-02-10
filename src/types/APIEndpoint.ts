@@ -1,7 +1,9 @@
 export enum APIEndpoint {
   OAUTH2_LOGIN = "/oauth2/login",
   OAUTH2_CHECK = "/oauth2/check",
-  OAUTH2_LOGOUT = "/users/logout",
+  USER_INFO = "/users/me",
+  USER_LOGOUT = "/users/logout",
+  USER_WITHDRAW = "/users",
   TOKEN_REISSUE = "/users/reissue",
   INSTALLATIONS = "/oauth2/installations",
   REPOSITORIES = "/repos",

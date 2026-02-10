@@ -42,10 +42,10 @@ const Header = () => {
         </div>
         {isLoggedIn && (
           <div className={styles.headerRight}>
-            <button onClick={handleLogout}>
+            <button onClick={handleLogout} aria-label="로그아웃">
               <img src={logout} alt="logout" />
             </button>
-            <Link to="/settings">
+            <Link to="/settings" aria-label="설정">
               <img src={settings} alt="settings" />
             </Link>
           </div>

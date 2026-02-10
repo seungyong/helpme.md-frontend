@@ -16,6 +16,7 @@ import OAuth2CallbackPage from "@src/pages/OAuth2CallbackPage";
 import NotFoundPage from "@src/pages/NotFoundPage";
 import RepoSelectPage from "@src/pages/RepoSelectPage";
 import RepoDetailPage from "@src/pages/RepoDetailPage";
+import Settings from "@src/pages/Settings";
 
 import Header from "@src/components/common/Header";
 import Footer from "@src/components/common/Footer";
@@ -35,6 +36,7 @@ const AppContent = () => {
           <Route path="/oauth2/callback" element={<OAuth2CallbackPage />} />
           <Route path="/repo/select" element={<RepoSelectPage />} />
           <Route path="/repo/:owner/:name" element={<RepoDetailPage />} />
+          <Route path="/settings" element={<Settings />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </div>
