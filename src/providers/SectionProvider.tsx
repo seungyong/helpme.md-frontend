@@ -64,14 +64,15 @@ export const SectionProvider = ({ children }: SectionProviderProps) => {
   } = useQuery<Sections, ApiError, Section[]>({
     queryKey: ["sections", owner, name],
     enabled: !!owner && !!name,
-    queryFn: () =>
-      apiClient<Sections>(
+    queryFn: async () => {
+      const response = await apiClient.get<Sections>(
         generateAPIEndpoint(APIEndpoint.SECTIONS, owner || "", name || "")
-      ),
-    select: (data: Sections) => data.sections,
+      );
+      return response.data;
+    },
+    select: (data) => data.sections,
     staleTime: Infinity,
     retry: false,
-    refetchOnWindowFocus: false,
   });
 
   const shouldShowInitModal = useMemo(() => {
@@ -116,15 +117,23 @@ export const SectionProvider = ({ children }: SectionProviderProps) => {
   }, [shouldShowInitModal, isManualModalOpen]);
 
   useEffect(() => {
-    if (isError && !(error?.errorCode === ERROR_CODE.NOT_FOUND_SECTIONS)) {
-      toast.error(error?.message || "섹션을 불러오는데 실패했습니다.");
+    if (
+      (isError && !(error?.errorCode === ERROR_CODE.NOT_FOUND_SECTIONS)) ||
+      error?.status === 401
+    ) {
+      return;
+    }
+
+    if (isError) {
+      toast.error("비정상적인 접근입니다.");
       navigate("/", { replace: true });
     }
   }, [isError, error, navigate]);
-
   useEffect(() => {
     return () => {
-      if (debounce.current) clearTimeout(debounce.current);
+      if (debounce.current) {
+        clearTimeout(debounce.current);
+      }
     };
   }, []);
 
@@ -174,18 +183,17 @@ const SectionStateManager = ({
     CreateSectionRequest
   >({
     mutationFn: (request) =>
-      apiClient<Section>(
-        generateAPIEndpoint(APIEndpoint.SECTIONS, owner || "", name || ""),
-        {
-          method: "POST",
-          body: JSON.stringify(request),
-        }
-      ),
+      apiClient
+        .post<Section>(
+          generateAPIEndpoint(APIEndpoint.SECTIONS, owner || "", name || ""),
+          request
+        )
+        .then((response) => response.data),
     onSuccess: (data) => {
       setSections((prev) => [...prev, data]);
     },
-    onError: (error) => {
-      toast.error(error.message || "섹션 추가에 실패했습니다.");
+    onError: () => {
+      toast.error("섹션 추가에 실패했습니다.");
     },
   });
 
@@ -195,16 +203,15 @@ const SectionStateManager = ({
     InitSectionRequest
   >({
     mutationFn: (request) =>
-      apiClient<Sections>(
-        generateAPIEndpoint(
-          APIEndpoint.SECTIONS_INIT,
-          owner || "",
-          name || ""
-        ) + `?branch=${request.branch}&splitMode=${request.splitMode}`,
-        {
-          method: "PUT",
-        }
-      ),
+      apiClient
+        .put<Sections>(
+          generateAPIEndpoint(
+            APIEndpoint.SECTIONS_INIT,
+            owner || "",
+            name || ""
+          ) + `?branch=${request.branch}&splitMode=${request.splitMode}`
+        )
+        .then((response) => response.data),
     onSuccess: (data) => {
       setSections(data.sections);
     },
@@ -219,17 +226,16 @@ const SectionStateManager = ({
     ReorderSectionRequest
   >({
     mutationFn: (request) =>
-      apiClient<void>(
-        generateAPIEndpoint(
-          APIEndpoint.SECTIONS_REORDER,
-          owner || "",
-          name || ""
-        ),
-        {
-          method: "PUT",
-          body: JSON.stringify(request),
-        }
-      ),
+      apiClient
+        .put<void>(
+          generateAPIEndpoint(
+            APIEndpoint.SECTIONS_REORDER,
+            owner || "",
+            name || ""
+          ),
+          request
+        )
+        .then((response) => response.data),
     onSuccess: (_, variables) => {
       setSections((prev: Section[]) =>
         variables.sectionIds.map((id, index) => {
@@ -249,17 +255,16 @@ const SectionStateManager = ({
     UpdateSectionContentRequest
   >({
     mutationFn: (request) =>
-      apiClient<void>(
-        generateAPIEndpoint(
-          APIEndpoint.SECTIONS_CONTENT,
-          owner || "",
-          name || ""
-        ),
-        {
-          method: "PATCH",
-          body: JSON.stringify(request),
-        }
-      ),
+      apiClient
+        .patch<void>(
+          generateAPIEndpoint(
+            APIEndpoint.SECTIONS_CONTENT,
+            owner || "",
+            name || ""
+          ),
+          request
+        )
+        .then((response) => response.data),
     onSuccess: (_, variables) => {
       setSections((prev) =>
         prev.map((section) =>
@@ -277,17 +282,16 @@ const SectionStateManager = ({
     DeleteSectionRequest
   >({
     mutationFn: (request) =>
-      apiClient<void>(
-        generateAPIEndpoint(
-          APIEndpoint.SECTIONS_DELETE,
-          owner || "",
-          name || "",
-          request.sectionId.toString()
-        ),
-        {
-          method: "DELETE",
-        }
-      ),
+      apiClient
+        .delete<void>(
+          generateAPIEndpoint(
+            APIEndpoint.SECTIONS_DELETE,
+            owner || "",
+            name || "",
+            request.sectionId.toString()
+          )
+        )
+        .then((response) => response.data),
     onSuccess: (_, variables) => {
       setSections((prev) =>
         prev.filter((section) => section.id !== variables.sectionId)

@@ -32,16 +32,12 @@ const PRButton = () => {
 
   const { mutate: createPRMutation } = useMutation<PR, ApiError>({
     mutationFn: async () => {
-      return apiClient<PR>(
+      const response = await apiClient.post<PR>(
         generateAPIEndpoint(APIEndpoint.CREATE_PR, owner || "", name || ""),
-        {
-          method: "POST",
-          body: JSON.stringify({
-            branch: effectiveBranch,
-            content: fullContent,
-          }),
-        }
+        { branch: effectiveBranch, content: fullContent }
       );
+
+      return response.data;
     },
   });
 

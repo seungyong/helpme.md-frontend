@@ -41,22 +41,19 @@ const GenerationButton = () => {
 
   const { mutate: fallbackMutation } = useMutation({
     mutationFn: async (taskId: string) => {
-      return apiClient<Sections>(
+      const response = await apiClient.get<Sections>(
         generateAPIEndpoint(APIEndpoint.GENERATE_FALLBACK, taskId)
       );
+
+      return response.data;
     },
   });
 
   const { mutate: generateMutation } = useMutation({
     mutationFn: async (taskId: string) => {
-      return apiClient<void>(
+      return apiClient.post<void>(
         `${generateAPIEndpoint(APIEndpoint.GENERATE, owner || "", name || "")}?taskId=${taskId}`,
-        {
-          method: "POST",
-          body: JSON.stringify({
-            branch: effectiveBranch,
-          }),
-        }
+        { branch: effectiveBranch }
       );
     },
   });

@@ -1,9 +1,19 @@
-import { useAuthQuery } from "./useAuthQuery";
+import { useContext, createContext } from "react";
+
+interface AuthContextType {
+  isLoggedIn: boolean;
+  login: () => void;
+  logout: () => Promise<void>;
+  withdraw: () => Promise<void>;
+}
+
+export const AuthContext = createContext<AuthContextType | null>(null);
 
 export const useAuth = () => {
-  const { isSuccess } = useAuthQuery();
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within AuthProvider");
+  }
 
-  const isLoggedIn = isSuccess;
-
-  return { isLoggedIn };
+  return context;
 };

@@ -6,8 +6,10 @@ import styles from "./RepoSelectPage.module.scss";
 
 import search from "@assets/images/search.svg";
 
-import { Installation } from "@src/types/installation";
+import { useAuth } from "@src/hooks/useAuth";
 import { apiClient } from "@src/utils/apiClient";
+
+import { Installation } from "@src/types/installation";
 import { APIEndpoint } from "@src/types/APIEndpoint";
 import { Repositories, RepositoryItem } from "@src/types/repository";
 
@@ -18,10 +20,14 @@ const RepoSelectPage = () => {
   const [selectedInstallationId, setSelectedInstallationId] = useState<
     string | null
   >(null);
+  const { isLoggedIn } = useAuth();
 
   const { data: installations, refetch: refetchInstallations } = useQuery({
     queryKey: ["installations"],
-    queryFn: () => apiClient<Installation>(APIEndpoint.INSTALLATIONS),
+    queryFn: () =>
+      apiClient
+        .get<Installation>(APIEndpoint.INSTALLATIONS)
+        .then((response) => response.data),
     select: (data) => data.installations,
     refetchOnWindowFocus: true,
   });
@@ -36,9 +42,11 @@ const RepoSelectPage = () => {
   } = useInfiniteQuery<Repositories>({
     queryKey: ["repositories", selectedInstallationId],
     queryFn: ({ pageParam }) =>
-      apiClient<Repositories>(
-        `${APIEndpoint.REPOSITORIES}?installation_id=${selectedInstallationId}&page=${pageParam}&per_page=${PAGE_SIZE}`
-      ),
+      apiClient
+        .get<Repositories>(
+          `${APIEndpoint.REPOSITORIES}?installation_id=${selectedInstallationId}&page=${pageParam}&per_page=${PAGE_SIZE}`
+        )
+        .then((response) => response.data),
     enabled: !!selectedInstallationId,
     getNextPageParam: (lastPage, pages) => {
       // 마지막 페이지가 PAGE_SIZE보다 작으면 더 이상 페이지 없음
@@ -132,6 +140,13 @@ const RepoSelectPage = () => {
       }
     };
   }, [selectedInstallationId, hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  if (!isLoggedIn) {
+    sessionStorage.setItem("redirectUrl", "/repo/select");
+    window.location.replace(
+      `${import.meta.env.VITE_API_URL}${APIEndpoint.OAUTH2_LOGIN}`
+    );
+  }
 
   return (
     <main className={styles.main}>

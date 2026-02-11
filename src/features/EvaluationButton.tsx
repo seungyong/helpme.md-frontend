@@ -41,23 +41,19 @@ const EvaluationButton = () => {
 
   const { mutate: fallbackMutation } = useMutation({
     mutationFn: async (taskId: string) => {
-      return apiClient<Evaluation>(
+      const response = await apiClient.get<Evaluation>(
         generateAPIEndpoint(APIEndpoint.EVALUATE_FALLBACK, taskId)
       );
+
+      return response.data;
     },
   });
 
   const { mutate: evaluateMutation } = useMutation({
     mutationFn: async (taskId: string) => {
-      return apiClient<void>(
+      return apiClient.post<void>(
         `${generateAPIEndpoint(APIEndpoint.EVALUATE, owner || "", name || "")}?taskId=${taskId}`,
-        {
-          method: "POST",
-          body: JSON.stringify({
-            branch: effectiveBranch,
-            content: fullContent,
-          }),
-        }
+        { branch: effectiveBranch, content: fullContent }
       );
     },
   });

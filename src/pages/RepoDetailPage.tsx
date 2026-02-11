@@ -6,6 +6,7 @@ import styles from "./RepoDetailPage.module.scss";
 import { SectionProvider } from "@src/providers/SectionProvider";
 
 import { apiClient } from "@src/utils/apiClient";
+import { useAuth } from "@src/hooks/useAuth";
 
 import { Repository } from "@src/types/repository";
 import { APIEndpoint } from "@src/types/APIEndpoint";
@@ -18,14 +19,24 @@ import EvaluationResult from "@src/components/repo/EvaluationResult";
 
 const RepoDetailPage = () => {
   const { owner, name } = useParams();
+  const { isLoggedIn } = useAuth();
 
   const { data: repo } = useQuery<Repository>({
     queryKey: ["repo", owner, name],
-    queryFn: () =>
-      apiClient<Repository>(`${APIEndpoint.REPOSITORIES}/${owner}/${name}`),
+    queryFn: async () =>
+      apiClient
+        .get<Repository>(`${APIEndpoint.REPOSITORIES}/${owner}/${name}`)
+        .then((response) => response.data),
     enabled: !!owner && !!name,
     refetchOnWindowFocus: false,
   });
+
+  if (!isLoggedIn) {
+    sessionStorage.setItem("redirectUrl", `/repo/${owner}/${name}`);
+    window.location.replace(
+      `${import.meta.env.VITE_API_URL}${APIEndpoint.OAUTH2_LOGIN}`
+    );
+  }
 
   return (
     <SectionProvider>

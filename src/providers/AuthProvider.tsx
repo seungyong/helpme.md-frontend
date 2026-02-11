@@ -1,9 +1,57 @@
-import { ReactNode } from "react";
-import { useAuthQuery } from "@src/hooks/useAuthQuery";
+import { ReactNode, useState, useEffect } from "react";
+
+import { apiClient } from "@src/utils/apiClient";
+import { APIEndpoint } from "@src/types/APIEndpoint";
+
+import { AuthContext } from "@src/hooks/useAuth";
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  // 백그라운드에서 인증 체크만 수행 (로딩 화면 없음)
-  useAuthQuery();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  return <>{children}</>;
+  const checkAuth = async () => {
+    try {
+      const response = await apiClient.post<null>(APIEndpoint.OAUTH2_CHECK);
+      if (response.status === 204) {
+        setIsLoggedIn(true);
+      } else {
+        setIsLoggedIn(false);
+      }
+    } catch {
+      setIsLoggedIn(false);
+    }
+  };
+
+  useEffect(() => {
+    (async () => {
+      await checkAuth();
+    })();
+  }, []);
+
+  const login = () => {
+    setIsLoggedIn(true);
+  };
+
+  const logout = async () => {
+    try {
+      await apiClient.post(APIEndpoint.USER_LOGOUT);
+    } finally {
+      setIsLoggedIn(false);
+      sessionStorage.removeItem("redirectUrl");
+    }
+  };
+
+  const withdraw = async () => {
+    try {
+      await apiClient.delete(APIEndpoint.USER_WITHDRAW);
+    } finally {
+      setIsLoggedIn(false);
+      sessionStorage.removeItem("redirectUrl");
+    }
+  };
+
+  return (
+    <AuthContext.Provider value={{ isLoggedIn, login, logout, withdraw }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };

@@ -1,28 +1,28 @@
+import { useCallback } from "react";
+
 import styles from "./header.module.scss";
 
-import logo from "@assets/images/logo.svg";
-import logout from "@assets/images/logout.svg";
+import logoIcon from "@assets/images/logo.svg";
+import logoutIcon from "@assets/images/logout.svg";
 import settings from "@assets/images/settings.svg";
 
 import { useAuth } from "@src/hooks/useAuth";
-import { useLogoutMutation } from "@src/hooks/useAuthQuery";
 import { useIsRepoPage } from "@src/hooks/useIsRepoPage";
 import { Link, useNavigate } from "react-router-dom";
 
 const Header = () => {
   const navigate = useNavigate();
   const isRepoPage = useIsRepoPage();
-  const { isLoggedIn } = useAuth();
-  const { mutateAsync: logoutAsync } = useLogoutMutation();
+  const { isLoggedIn, logout } = useAuth();
 
-  const handleLogout = async () => {
+  const handleLogout = useCallback(async () => {
     if (!isLoggedIn) {
       return;
     }
 
-    await logoutAsync();
+    await logout();
     navigate("/");
-  };
+  }, [isLoggedIn, logout, navigate]);
 
   return (
     <header className={styles.header}>
@@ -31,7 +31,7 @@ const Header = () => {
       >
         <div className={styles.headerLeft}>
           <Link to="/">
-            <img src={logo} alt="logo" />
+            <img src={logoIcon} alt="logo" />
           </Link>
           <div className={styles.headerLeftTitle}>
             <Link to="/" className={styles.linkTitle}>
@@ -43,7 +43,7 @@ const Header = () => {
         {isLoggedIn && (
           <div className={styles.headerRight}>
             <button onClick={handleLogout} aria-label="로그아웃">
-              <img src={logout} alt="logout" />
+              <img src={logoutIcon} alt="logout" />
             </button>
             <Link to="/settings" aria-label="설정">
               <img src={settings} alt="settings" />

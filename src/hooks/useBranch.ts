@@ -13,9 +13,11 @@ export const useBranch = () => {
   const { data: branches, isSuccess } = useQuery<Branches, ApiError, string[]>({
     queryKey: ["branches", owner, name],
     queryFn: () =>
-      apiClient<Branches>(
-        generateAPIEndpoint(APIEndpoint.BRANCHES, owner || "", name || "")
-      ),
+      apiClient
+        .get<Branches>(
+          generateAPIEndpoint(APIEndpoint.BRANCHES, owner || "", name || "")
+        )
+        .then((response) => response.data),
     select: (data: Branches) => data.branches,
     enabled: !!owner && !!name,
   });

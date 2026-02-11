@@ -6,39 +6,42 @@ import styles from "./Settings.module.scss";
 
 import { User } from "@src/types/user";
 import { APIEndpoint } from "@src/types/APIEndpoint";
-import { ApiError } from "@src/types/error";
 
 import { apiClient } from "@src/utils/apiClient";
-import { useWithdrawMutation } from "@src/hooks/useAuthQuery";
+import { useAuth } from "@src/hooks/useAuth";
 
 const Settings = () => {
   const navigate = useNavigate();
+  const { isLoggedIn, withdraw } = useAuth();
 
   const [isDisabled, setIsDisabled] = useState<boolean>(false);
   const [username, setUsername] = useState<string | null>(null);
 
-  const { mutate: withdrawMutation } = useWithdrawMutation(() => {
-    setIsDisabled(false);
-    navigate("/");
-  });
-
-  const { mutate: getUserMutation } = useMutation<User, ApiError>({
+  const { mutate: getUserMutation } = useMutation<User>({
     mutationFn: async () => {
-      return apiClient<User>(APIEndpoint.USER_INFO);
+      return apiClient
+        .get<User>(APIEndpoint.USER_INFO)
+        .then((response) => response.data);
     },
     onSuccess: (data) => {
       setUsername(data.username);
     },
   });
 
-  const handleWithdraw = useCallback(() => {
+  const handleWithdraw = useCallback(async () => {
     if (isDisabled) {
       return;
     }
 
     setIsDisabled(true);
-    withdrawMutation();
-  }, [isDisabled, withdrawMutation]);
+
+    try {
+      await withdraw();
+    } finally {
+      setIsDisabled(false);
+      navigate("/");
+    }
+  }, [isDisabled, withdraw, navigate]);
 
   const handleGithubAppLink = useCallback(() => {
     window.open(
@@ -51,6 +54,13 @@ const Settings = () => {
   useEffect(() => {
     getUserMutation();
   }, [getUserMutation]);
+
+  if (!isLoggedIn) {
+    sessionStorage.setItem("redirectUrl", "/settings");
+    window.location.replace(
+      `${import.meta.env.VITE_API_URL}${APIEndpoint.OAUTH2_LOGIN}`
+    );
+  }
 
   return (
     <div className={styles.settings}>
