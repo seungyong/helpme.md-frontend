@@ -79,14 +79,14 @@ const InitSection = ({
       {
         onSuccess: () => {
           onComplete();
+          setIsLoading(false);
         },
         onError: () => {
           toast.error("섹션 생성에 실패했습니다.");
+          setIsLoading(false);
         },
       }
     );
-
-    setIsLoading(false);
   }, [initSections, effectiveBranch, selectedMode.value, onComplete]);
 
   return (

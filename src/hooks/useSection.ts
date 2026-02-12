@@ -13,7 +13,7 @@ import { Callback } from "@src/types/request/common";
 export interface SectionContextType {
   sections: Section[];
   fullContent: string;
-  clickedSection: Section;
+  clickedSection: Section | null;
   isLoading: boolean;
   clickSection: (section: Section) => void;
   resetSection: (splitMode: string) => void;

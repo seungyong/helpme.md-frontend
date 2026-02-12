@@ -169,8 +169,8 @@ const SectionStateManager = ({
 }: SectionStateManagerProps) => {
   const { owner, name } = useParams();
   const [sections, setSections] = useState<Section[]>(initialSections);
-  const [clickedSection, setClickedSection] = useState<Section>(
-    initialSections[0]
+  const [clickedSection, setClickedSection] = useState<Section | null>(
+    initialSections[0] || null
   );
 
   const fullContent = useMemo(() => {
@@ -297,8 +297,10 @@ const SectionStateManager = ({
         prev.filter((section) => section.id !== variables.sectionId)
       );
 
-      if (clickedSection.id === variables.sectionId) {
-        setClickedSection(sections[0]);
+      if (clickedSection?.id === variables.sectionId) {
+        setClickedSection(
+          sections.find((s) => s.id !== variables.sectionId) ?? sections[0]
+        );
       }
     },
     onError: () => {

@@ -18,11 +18,11 @@ const createApiError = (error): ApiError => {
     const data = error.response.data;
 
     return new ApiError({
-      status: error.response.status,
-      error: data.error,
-      errorCode: data.errorCode,
-      code: data.code,
-      message: data.message,
+      status: error.response.status || 500,
+      error: data.error || "Internal Server Error",
+      errorCode: data.errorCode || "SERVER_500",
+      code: data.code || "SERVER_500",
+      message: data.message || "Internal Server Error",
     });
   }
 

@@ -36,6 +36,7 @@ const RepoDetailPage = () => {
     window.location.replace(
       `${import.meta.env.VITE_API_URL}${APIEndpoint.OAUTH2_LOGIN}`
     );
+    return null;
   }
 
   return (

@@ -60,6 +60,7 @@ const Settings = () => {
     window.location.replace(
       `${import.meta.env.VITE_API_URL}${APIEndpoint.OAUTH2_LOGIN}`
     );
+    return null;
   }
 
   return (
@@ -78,15 +79,17 @@ const Settings = () => {
               서비스에 연결된 Github 계정 정보입니다.
             </p>
           </div>
-          <div className={styles.sectionAction}>
-            <Link
-              to={`https://github.com/${username}`}
-              target="_blank"
-              className={styles.linkButton}
-            >
-              Github 이동
-            </Link>
-          </div>
+          {username && (
+            <div className={styles.sectionAction}>
+              <Link
+                to={`https://github.com/${username}`}
+                target="_blank"
+                className={styles.linkButton}
+              >
+                Github 이동
+              </Link>
+            </div>
+          )}
         </section>
 
         <section className={styles.section} aria-label="연결된 Github App">

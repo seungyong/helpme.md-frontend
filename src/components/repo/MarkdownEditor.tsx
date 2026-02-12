@@ -48,9 +48,7 @@ const MarkdownEditor = () => {
 
   // 자동 저장 (디바운싱)
   useEffect(() => {
-    if (!isDirty || !content?.trim()) {
-      return;
-    }
+    if (!isDirty || !content?.trim() || !clickedSection?.id) return;
 
     if (saveTimeoutRef.current) {
       clearTimeout(saveTimeoutRef.current);

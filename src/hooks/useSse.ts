@@ -1,3 +1,5 @@
+import { useRef, useEffect } from "react";
+
 import { APIEndpoint } from "@src/types/APIEndpoint";
 import { ApiError } from "@src/types/error";
 import { Sections } from "@src/types/section";
@@ -13,6 +15,7 @@ export interface SseListenOptions<T = Sections> {
  *
  * 이벤트 리스너는 이벤트가 발생할 때마다 쿼리 데이터를 업데이트합니다.
  * 결과는 비동기로 오므로, 실제 결과 처리 시에는 onSuccess 콜백을 사용하세요.
+ * SSE 사용 컴포넌트가 언마운트되면(페이지 이탈 등) 연결은 자동으로 정리됩니다.
  *
  * @param queryKey - 쿼리 키
  * @param eventName - 이벤트 이름
@@ -20,14 +23,28 @@ export interface SseListenOptions<T = Sections> {
  */
 export const useSse = (queryKey: string[], eventName: string) => {
   const queryClient = useQueryClient();
+  const eventSourceRef = useRef<EventSource | null>(null);
+
+  const stop = (eventSource: EventSource) => {
+    eventSource.close();
+    if (eventSourceRef.current === eventSource) {
+      eventSourceRef.current = null;
+    }
+  };
 
   const listen = <T = Sections>(options?: SseListenOptions<T>) => {
+    if (eventSourceRef.current) {
+      eventSourceRef.current.close();
+      eventSourceRef.current = null;
+    }
+
     const eventSource = new EventSource(
       `${import.meta.env.VITE_API_URL}${APIEndpoint.SSE}`,
       {
         withCredentials: true,
       }
     );
+    eventSourceRef.current = eventSource;
 
     eventSource.addEventListener("connected", (event) => {
       const data = event.data && JSON.parse(event.data);
@@ -59,11 +76,24 @@ export const useSse = (queryKey: string[], eventName: string) => {
 
       stop(eventSource);
     });
+
+    eventSource.onerror = () => {
+      stop(eventSource);
+    };
+
+    return () => {
+      stop(eventSource);
+    };
   };
 
-  const stop = (eventSource: EventSource) => {
-    eventSource.close();
-  };
+  useEffect(() => {
+    return () => {
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close();
+        eventSourceRef.current = null;
+      }
+    };
+  }, []);
 
   return { listen };
 };
