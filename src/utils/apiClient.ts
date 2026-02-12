@@ -93,8 +93,13 @@ apiClient.interceptors.response.use(
         return apiClient(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError);
-        sessionStorage.setItem("redirectUrl", window.location.pathname);
-        window.location.href = `${import.meta.env.VITE_API_URL}${APIEndpoint.OAUTH2_LOGIN}`;
+
+        const currentPath = window.location.pathname;
+        if (currentPath !== "/") {
+          sessionStorage.setItem("redirectUrl", window.location.pathname);
+          window.location.href = `${import.meta.env.VITE_API_URL}${APIEndpoint.OAUTH2_LOGIN}`;
+        }
+
         return Promise.reject(createApiError(refreshError));
       } finally {
         isRefreshing = false;
