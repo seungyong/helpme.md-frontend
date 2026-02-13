@@ -1,0 +1,176 @@
+.main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5.625rem;
+  margin: 10rem 0;
+
+  .mainSection {
+    text-align: center;
+
+    .mainTitle {
+      margin-bottom: 0.3125rem;
+      font-size: 2.5rem;
+    }
+
+    .emphasisText {
+      color: $primary-color;
+      font-weight: $font-bold;
+    }
+
+    .btnGroup {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.9375rem;
+      margin-top: 2.1875rem;
+      word-break: keep-all;
+
+      .githubBtn {
+        @include button(
+          $border-color,
+          linear-gradient(0deg, #2f6bff, #5a8dff),
+          1rem 2rem
+        );
+
+        box-shadow: 0 12px 34px 0 #1b4aff50;
+        cursor: pointer;
+        user-select: none;
+
+        &:hover {
+          transition: all 0.5s ease-in-out;
+          transform: translateY(-5px);
+          box-shadow: 0 12px 34px 0 #1b4aff70;
+        }
+      }
+
+      .subBtn {
+        @include button($border-color, $background-elevated-color, 1rem 2rem);
+        text-decoration: none;
+        color: $text-sub-color;
+        user-select: none;
+      }
+    }
+  }
+
+  .howToUseSection {
+    margin-top: 7.5rem;
+
+    .howToUseList {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.625rem;
+      list-style: none;
+      margin-top: 0.9375rem;
+
+      @media screen and (max-width: 1700px) {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      @include max-tablet {
+        grid-template-columns: repeat(1, 1fr);
+        gap: 0.3125rem;
+      }
+
+      .howToUseItem {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        padding: 1.25rem 1rem;
+        background: linear-gradient(
+          to bottom right,
+          #1b2140 0%,
+          #14182c 30%,
+          #070910 100%
+        );
+        border-color: $border-color;
+        border-radius: $border-radius;
+
+        .howToUseItemNumber {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          width: 1.875rem;
+          height: 1.875rem;
+          margin-bottom: 0.3125rem;
+          border-radius: 0.25rem;
+          background-color: #2f6bff16;
+        }
+
+        .howToUseItemDescription {
+          flex: 1;
+          margin: 0.9375rem 0;
+        }
+
+        .howToUseItemSubDescription {
+          font-size: 0.75rem;
+        }
+      }
+    }
+  }
+
+  .howToReadContent {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.625rem;
+    margin-top: 0.9375rem;
+    padding: 1.875rem 2.5rem;
+    background: linear-gradient(
+      to bottom right,
+      #1b2140 0%,
+      #14182c 30%,
+      #070910 100%
+    );
+    border-color: $border-color;
+    border-radius: $border-radius;
+
+    @media screen and (max-width: 1200px) {
+      grid-template-columns: repeat(1, 1fr);
+    }
+
+    > div {
+      flex: 1;
+    }
+
+    ul {
+      margin: 0.9375rem 0 0.9375rem;
+      padding-left: 1.25rem;
+    }
+
+    .howToReadList {
+      ::marker {
+        color: $primary-color;
+      }
+    }
+
+    .danger {
+      display: flex;
+      gap: 0.3125rem;
+      color: #ffa299;
+      font-size: 0.75rem;
+
+      img {
+        position: relative;
+        top: 0.1875rem;
+        width: 0.875rem;
+        height: 0.875rem;
+      }
+    }
+
+    .howToReadDescription {
+      margin: 0.9375rem 0 0.9375rem;
+    }
+
+    .howToReadScore {
+      margin-top: 0.625rem;
+      padding: 0.625rem 1.25rem;
+      border: 1px solid $border-color;
+      border-radius: $border-radius;
+      background-color: $background-elevated-color;
+
+      .howToReadScoreTitle {
+        font-weight: $font-bold;
+      }
+    }
+  }
+}

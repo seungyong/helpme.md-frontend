@@ -8,14 +8,29 @@ $secondary-dark-color: #ea580c;
 $text-color: #e5e7eb;
 $text-sub-color: #9aa0b5;
 $text-sub-dark-color: #72789b;
+
 $border-color: #24283a;
 
 $background-color: #0f0f0f;
 $background-elevated-color: #020617;
-$background-gradient: linear-gradient(0%, #1b2140, 30%, #14182c, 100%, #070910);
+$background-gradient: linear-gradient(
+  0deg,
+  #1b2140,
+  30deg,
+  #14182c,
+  100deg,
+  #070910
+);
 
 $success-color: #008c33;
-$warning-color: #eab308;
+$warning-color: #d69a00;
 $error-color: #f97373;
 
 $border-radius: 6px;
+
+// 브레이크포인트 (반응형 디자인)
+$breakpoint-mobile: 30rem; // 모바일
+$breakpoint-tablet: 48rem; // 태블릿
+$breakpoint-desktop: 64rem; // 데스크탑
+$breakpoint-wide: 90rem; // 와이드 스크린
+$breakpoint-large: 82.5rem; // 레포

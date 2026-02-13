@@ -1,0 +1,51 @@
+.main {
+  padding: 0.9375rem 0;
+
+  @include max-large {
+    height: auto;
+  }
+
+  .mainSection {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9375rem;
+    height: 100%;
+
+    .content {
+      display: grid;
+      grid-template-columns: 17.5rem minmax(0, 1fr);
+      gap: 0.9375rem;
+      height: 100%;
+
+      @include max-large {
+        grid-template-columns: 1fr;
+        overflow-y: auto;
+        height: auto;
+
+        & > * {
+          overflow: initial !important;
+        }
+
+        // 스크롤 제거
+        ::-webkit-scrollbar {
+          display: none;
+        }
+
+        ::-webkit-scrollbar-track {
+          display: none;
+        }
+
+        ::-webkit-scrollbar-thumb {
+          display: none;
+        }
+      }
+
+      .item {
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        gap: 0.9375rem;
+      }
+    }
+  }
+}

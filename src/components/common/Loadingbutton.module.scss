@@ -1,0 +1,54 @@
+.button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.25rem;
+  padding: 0.5rem 1rem;
+  background-color: $background-elevated-color;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  color: $text-color;
+  cursor: pointer;
+  transition: opacity 0.2s;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.8;
+  }
+}
+
+.content {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  &[data-loading="true"] {
+    visibility: hidden;
+  }
+}
+
+.spinnerWrap {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinner {
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid $border-color;
+  border-top-color: $primary-color;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

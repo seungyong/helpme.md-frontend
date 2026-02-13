@@ -1,0 +1,25 @@
+.content {
+  padding: 0 15%;
+
+  @include max-tablet {
+    padding: 0 10%;
+  }
+
+  @include max-mobile {
+    padding: 0 5%;
+  }
+}
+
+.repo {
+  .content {
+    padding: 0 2%;
+
+    @include max-tablet {
+      padding: 0 5%;
+    }
+
+    @include max-mobile {
+      padding: 0 5%;
+    }
+  }
+}

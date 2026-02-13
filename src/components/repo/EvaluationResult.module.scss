@@ -1,0 +1,124 @@
+.container {
+  padding: 1rem;
+  border-radius: $border-radius;
+  border: 1px solid $border-color;
+  background-color: $background-elevated-color;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .title {
+    @include large-text($text-color);
+  }
+
+  .badge {
+    @include small-text($text-sub-color);
+    padding: 0.125rem 0.5rem;
+    border-radius: 9999px;
+    border: 1px solid rgba(148, 163, 184, 0.6);
+    background-color: rgba(15, 23, 42, 0.7);
+  }
+}
+
+.rating {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.25rem;
+
+  .score {
+    font-size: 1.75rem;
+    font-weight: 700;
+
+    &.excellent {
+      color: $primary-color !important;
+    }
+
+    &.good {
+      color: #008c33 !important;
+    }
+
+    &.need_improvement {
+      color: #d69a00 !important;
+    }
+
+    &.insufficient {
+      color: #f97373 !important;
+    }
+  }
+
+  .max {
+    @include small-text($text-sub-color);
+  }
+}
+
+.list {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+
+  li {
+    @include small-text($text-color);
+    line-height: 1.5;
+  }
+}
+
+.empty {
+  @include small-text($text-sub-color);
+}
+
+.sections {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.sectionGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.sectionTitle {
+  @include small-text($text-sub-color);
+  font-weight: 600;
+}
+
+.sectionTitlePositive {
+  color: $success-color;
+}
+
+.sectionTitleNegative {
+  color: $warning-color;
+}
+
+.ratingBadge {
+  color: $text-color !important;
+
+  &.excellent {
+    border-color: rgba(59, 130, 246, 0.5647058824);
+    background: rgba(59, 130, 246, 0.1294117647);
+  }
+
+  &.good {
+    border-color: rgba(0, 184, 68, 0.5647058824);
+    background-color: rgba(0, 140, 51, 0.1294117647);
+  }
+
+  &.need_improvement {
+    border-color: rgba(214, 154, 0, 0.5647058824);
+    background-color: rgba(214, 154, 0, 0.1294117647);
+  }
+
+  &.insufficient {
+    border-color: rgba(239, 68, 68, 0.5647058824);
+    background-color: rgba(239, 68, 68, 0.1294117647);
+  }
+}

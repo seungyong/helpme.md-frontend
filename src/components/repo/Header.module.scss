@@ -1,0 +1,64 @@
+.repoDetailHeader {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, auto);
+  width: 100%;
+  gap: 0.9375rem;
+
+  @include max-large {
+    grid-template-columns: 1fr;
+
+    .mainTitle {
+      flex: 1;
+      max-width: 100% !important;
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .repoDetailHeaderLeft {
+    display: flex;
+    align-items: center;
+    gap: 0.9375rem;
+    min-width: 0;
+
+    .repoDetailAvatar {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+    }
+
+    .mainTitle {
+      max-width: 80%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .repoDetailHeaderRight {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.9375rem;
+    justify-content: flex-end;
+    min-width: 0;
+    font-size: 0.875rem;
+
+    @media screen and (max-width: 41.25rem) {
+      flex-direction: column;
+
+      button {
+        justify-content: center;
+      }
+    }
+
+    button {
+      img {
+        width: 1rem;
+        height: 1rem;
+        margin-right: 0.5rem;
+      }
+    }
+  }
+}
