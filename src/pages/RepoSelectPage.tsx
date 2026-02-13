@@ -94,6 +94,11 @@ const RepoSelectPage = () => {
 
     // 팝업 창 닫힘 감지
     const checkPopupClosed = setInterval(() => {
+      if (!popup) {
+        clearInterval(checkPopupClosed);
+        return;
+      }
+
       if (popup && popup.closed) {
         clearInterval(checkPopupClosed);
 
@@ -146,6 +151,7 @@ const RepoSelectPage = () => {
     window.location.replace(
       `${import.meta.env.VITE_API_URL}${APIEndpoint.OAUTH2_LOGIN}`
     );
+    return null;
   }
 
   return (
@@ -241,7 +247,7 @@ const RepoSelectPage = () => {
           )}
         </ul>
         <p className="text-description text-sub-color">
-          연겯되지 않은 Repository가 있나요?{" "}
+          연결되지 않은 Repository가 있나요?{" "}
           <a
             className={styles.installationLink}
             onClick={handleInstallationLink}

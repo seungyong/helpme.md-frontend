@@ -18,11 +18,11 @@ const createApiError = (error): ApiError => {
     const data = error.response.data;
 
     return new ApiError({
-      status: error.response.status,
-      error: data.error,
-      errorCode: data.errorCode,
-      code: data.code,
-      message: data.message,
+      status: error.response.status || 500,
+      error: data.error || "Internal Server Error",
+      errorCode: data.errorCode || "SERVER_500",
+      code: data.code || "SERVER_500",
+      message: data.message || "Internal Server Error",
     });
   }
 
@@ -93,8 +93,13 @@ apiClient.interceptors.response.use(
         return apiClient(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError);
-        sessionStorage.setItem("redirectUrl", window.location.pathname);
-        window.location.href = `${import.meta.env.VITE_API_URL}${APIEndpoint.OAUTH2_LOGIN}`;
+
+        const currentPath = window.location.pathname;
+        if (currentPath !== "/") {
+          sessionStorage.setItem("redirectUrl", window.location.pathname);
+          window.location.href = `${import.meta.env.VITE_API_URL}${APIEndpoint.OAUTH2_LOGIN}`;
+        }
+
         return Promise.reject(createApiError(refreshError));
       } finally {
         isRefreshing = false;
