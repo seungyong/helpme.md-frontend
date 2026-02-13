@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 
-import styles from "./header.module.scss";
+import styles from "./Header.module.scss";
 
 import logoIcon from "@assets/images/logo.svg";
 import logoutIcon from "@assets/images/logout.svg";

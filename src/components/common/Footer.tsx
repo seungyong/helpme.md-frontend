@@ -1,4 +1,4 @@
-import styles from "./footer.module.scss";
+import styles from "./Footer.module.scss";
 
 import { useIsRepoPage } from "@src/hooks/useIsRepoPage";
 
