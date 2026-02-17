@@ -7,9 +7,11 @@ import { AuthContext } from "@src/hooks/useAuth";
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const checkAuth = async () => {
     try {
+      setIsLoading(true);
       const response = await apiClient.post<null>(APIEndpoint.OAUTH2_CHECK);
       if (response.status === 204) {
         setIsLoggedIn(true);
@@ -18,6 +20,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     } catch {
       setIsLoggedIn(false);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -50,7 +54,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, login, logout, withdraw }}>
+    <AuthContext.Provider
+      value={{ isLoggedIn, isLoading, login, logout, withdraw }}
+    >
       {children}
     </AuthContext.Provider>
   );

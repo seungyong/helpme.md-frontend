@@ -12,7 +12,7 @@ import { useAuth } from "@src/hooks/useAuth";
 
 const Settings = () => {
   const navigate = useNavigate();
-  const { isLoggedIn, withdraw } = useAuth();
+  const { isLoggedIn, isLoading, withdraw } = useAuth();
 
   const [isDisabled, setIsDisabled] = useState<boolean>(false);
   const [username, setUsername] = useState<string | null>(null);
@@ -55,7 +55,7 @@ const Settings = () => {
     getUserMutation();
   }, [getUserMutation]);
 
-  if (!isLoggedIn) {
+  if (!isLoggedIn && !isLoading) {
     sessionStorage.setItem("redirectUrl", "/settings");
     window.location.replace(
       `${import.meta.env.VITE_API_URL}${APIEndpoint.OAUTH2_LOGIN}`

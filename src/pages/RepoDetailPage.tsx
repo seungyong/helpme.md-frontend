@@ -19,7 +19,7 @@ import EvaluationResult from "@src/components/repo/EvaluationResult";
 
 const RepoDetailPage = () => {
   const { owner, name } = useParams();
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, isLoading } = useAuth();
 
   const { data: repo } = useQuery<Repository>({
     queryKey: ["repo", owner, name],
@@ -31,7 +31,7 @@ const RepoDetailPage = () => {
     refetchOnWindowFocus: false,
   });
 
-  if (!isLoggedIn) {
+  if (!isLoggedIn && !isLoading) {
     sessionStorage.setItem("redirectUrl", `/repo/${owner}/${name}`);
     window.location.replace(
       `${import.meta.env.VITE_API_URL}${APIEndpoint.OAUTH2_LOGIN}`

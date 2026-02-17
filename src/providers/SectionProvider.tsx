@@ -118,7 +118,7 @@ export const SectionProvider = ({ children }: SectionProviderProps) => {
 
   useEffect(() => {
     if (
-      (isError && !(error?.errorCode === ERROR_CODE.NOT_FOUND_SECTIONS)) ||
+      (isError && error?.errorCode === ERROR_CODE.NOT_FOUND_SECTIONS) ||
       error?.status === 401
     ) {
       return;
@@ -141,6 +141,10 @@ export const SectionProvider = ({ children }: SectionProviderProps) => {
     if (!isSuccess || !sections?.length) return isSuccess ? "success" : "none";
     return `sections-${sections.map((s) => s.id).join("-")}`;
   }, [isSuccess, sections]);
+
+  if (isLoading) {
+    return null;
+  }
 
   return (
     <SectionStateManager

@@ -13,16 +13,16 @@ import { Link, useNavigate } from "react-router-dom";
 const Header = () => {
   const navigate = useNavigate();
   const isRepoPage = useIsRepoPage();
-  const { isLoggedIn, logout } = useAuth();
+  const { isLoggedIn, isLoading, logout } = useAuth();
 
   const handleLogout = useCallback(async () => {
-    if (!isLoggedIn) {
+    if (!isLoggedIn && !isLoading) {
       return;
     }
 
     await logout();
     navigate("/");
-  }, [isLoggedIn, logout, navigate]);
+  }, [isLoggedIn, isLoading, logout, navigate]);
 
   return (
     <header className={styles.header}>
