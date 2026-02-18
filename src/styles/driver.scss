@@ -1,0 +1,105 @@
+@use "styles/variable" as *;
+@use "styles/font" as *;
+
+// 기본 driver.js 스타일을 가져온 뒤, 프로젝트 다크 테마에 맞게 오버라이드
+@import "driver.js/dist/driver.css";
+
+.driver-overlay {
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+.driver-popover {
+  background-color: $background-elevated-color;
+  color: $text-color;
+  border-radius: $border-radius;
+  box-shadow:
+    0 0 0 1px $border-color,
+    0 18px 45px rgba(0, 0, 0, 0.9);
+  padding: 0.75rem 1rem;
+}
+
+.driver-popover-title {
+  font-family: $font-family;
+  font-weight: $font-bold;
+  font-size: 1rem;
+  color: $text-color;
+}
+
+.driver-popover-description {
+  font-family: $font-family;
+  font-weight: $font-regular;
+  font-size: 0.875rem;
+  color: $text-sub-color;
+  white-space: pre-line;
+}
+
+.driver-popover-footer {
+  border-top: 1px solid $border-color;
+  padding-top: 0.5rem;
+}
+
+.driver-popover-progress-text {
+  color: $text-sub-dark-color;
+}
+
+.driver-popover-footer button {
+  background-color: $background-color;
+  color: $text-color;
+  border-radius: $border-radius;
+  border: 1px solid $border-color;
+  text-shadow: none;
+  box-shadow: none;
+}
+
+.driver-popover-footer button:hover,
+.driver-popover-footer button:focus {
+  background-color: rgba(148, 163, 184, 0.15);
+}
+
+.driver-popover-footer .driver-popover-btn-disabled {
+  opacity: 0.7;
+  color: $text-sub-dark-color;
+}
+
+.driver-popover-navigation-btns button:last-child {
+  background-color: $primary-color;
+  border-color: $primary-color;
+  color: $text-color;
+}
+
+.driver-popover-navigation-btns button:last-child:hover,
+.driver-popover-navigation-btns button:last-child:focus {
+  background-color: $primary-light-color;
+}
+
+.driver-popover-arrow {
+  border: 5px solid $border-color;
+}
+
+.driver-popover-arrow-side-left {
+  left: 100%;
+  border-right-color: transparent;
+  border-bottom-color: transparent;
+  border-top-color: transparent;
+}
+
+.driver-popover-arrow-side-right {
+  right: 100%;
+  border-left-color: transparent;
+  border-bottom-color: transparent;
+  border-top-color: transparent;
+}
+
+.driver-popover-arrow-side-top {
+  top: 100%;
+  border-right-color: transparent;
+  border-bottom-color: transparent;
+  border-left-color: transparent;
+}
+
+.driver-popover-arrow-side-bottom {
+  bottom: 100%;
+  border-left-color: transparent;
+  border-top-color: transparent;
+  border-right-color: transparent;
+}

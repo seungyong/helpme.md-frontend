@@ -210,6 +210,7 @@ const MarkdownEditor = () => {
         preview={isMerging ? "preview" : "live"}
         commands={editorCommands}
         extraCommands={editorExtraCommands}
+        data-color-mode="dark"
       />
     </div>
   );

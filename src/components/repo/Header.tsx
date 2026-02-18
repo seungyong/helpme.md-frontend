@@ -21,10 +21,12 @@ const Header = ({ repo }: { repo: Repository }) => {
         </h1>
       </div>
       <div className={styles.repoDetailHeaderRight}>
-        <ResetButton />
-        <EvaluationButton />
-        <GenerationButton />
-        <PRButton />
+        <div className={`${styles.repoDetailHeaderRightInner} func-buttons`}>
+          <ResetButton />
+          <EvaluationButton />
+          <GenerationButton />
+          <PRButton />
+        </div>
       </div>
     </div>
   );

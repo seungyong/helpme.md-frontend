@@ -126,7 +126,7 @@ const DragableSection = () => {
         items={sections.map((s) => s.id)}
         strategy={verticalListSortingStrategy}
       >
-        <div className={styles.dragableComponent}>
+        <div className={`${styles.dragableComponent} dragable-sections`}>
           {sections.map((section) => (
             <SortableItem
               key={section.id}

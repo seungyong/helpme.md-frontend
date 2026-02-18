@@ -111,7 +111,10 @@ const EvaluationResult = () => {
 
   if (!hasResult) {
     return (
-      <section className={styles.container} aria-label="README 평가 결과">
+      <section
+        className={`${styles.container} evaluation-result`}
+        aria-label="README 평가 결과"
+      >
         <div className={styles.header}>
           <h2 className={styles.title}>Evaluation</h2>
           <span className={styles.badge}>대기 중</span>
