@@ -1,6 +1,7 @@
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import Modal from "react-modal";
+import { Analytics } from "@vercel/analytics/react";
 
 import "./index.scss";
 import App from "./App";
@@ -8,7 +9,10 @@ import App from "./App";
 Modal.setAppElement("#root");
 
 createRoot(document.getElementById("root")!).render(
-  <BrowserRouter>
-    <App />
-  </BrowserRouter>
+  <>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+    <Analytics />
+  </>
 );
