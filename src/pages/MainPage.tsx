@@ -1,5 +1,5 @@
-import { useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import styles from "./MainPage.module.scss";
 
@@ -44,7 +44,7 @@ const MainPage = () => {
     },
   ];
 
-  const handleGithubLogin = () => {
+  const handleGithubLogin = useCallback(() => {
     if (isLoggedIn) {
       navigate("/repo/select");
       return;
@@ -64,7 +64,7 @@ const MainPage = () => {
 
       setIsLoading(false);
     }, 1000);
-  };
+  }, [isLoggedIn, navigate]);
 
   const howToReads = [
     "폴더/파일 구조 (src, app, docs, etc.)",
@@ -74,6 +74,17 @@ const MainPage = () => {
     "커밋 내역",
     "기존 README.md 내용",
   ];
+
+  useEffect(() => {
+    return () => {
+      if (debounce.current) {
+        clearTimeout(debounce.current);
+        debounce.current = null;
+      }
+
+      setIsLoading(false);
+    };
+  }, []);
 
   return (
     <>
@@ -92,15 +103,15 @@ const MainPage = () => {
             소개를 더 쉽게 만드세요.
           </p>
           <div className={styles.btnGroup}>
-            <Link
+            <button
+              type="button"
               className={styles.githubBtn}
               onClick={handleGithubLogin}
-              to="#"
             >
-              Github로 시작하기
-            </Link>
+              지금 만들어보기
+            </button>
             <a href="#how-to-use" className={styles.subBtn}>
-              어떤 식으로 만들어져요?
+              어떻게 만들어지나요?
             </a>
           </div>
         </section>

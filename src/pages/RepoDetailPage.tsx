@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import styles from "./RepoDetailPage.module.scss";
 
 import { SectionProvider } from "@src/providers/SectionProvider";
+import { DriverProvider } from "@src/providers/DriverProvider";
 
 import { apiClient } from "@src/utils/apiClient";
 import { useAuth } from "@src/hooks/useAuth";
@@ -41,27 +42,29 @@ const RepoDetailPage = () => {
 
   return (
     <SectionProvider>
-      <main className={styles.main}>
-        <section className={styles.mainSection}>
-          {repo && (
-            <>
-              <Header repo={repo} />
-              <div className={styles.content}>
-                <aside className={styles.item}>
-                  <p className="text-emphasis">Components</p>
-                  <DragableSection />
-                  <Section />
-                </aside>
-                <div className={styles.item}>
-                  <p className="text-emphasis">Editor</p>
-                  <MarkdownEditor />
-                  <EvaluationResult />
+      <DriverProvider>
+        <main className={styles.main}>
+          <section className={styles.mainSection}>
+            {repo && (
+              <>
+                <Header repo={repo} />
+                <div className={styles.content}>
+                  <aside className={styles.item}>
+                    <p className="text-emphasis">Components</p>
+                    <DragableSection />
+                    <Section />
+                  </aside>
+                  <div className={styles.item}>
+                    <p className="text-emphasis">Editor</p>
+                    <MarkdownEditor />
+                    <EvaluationResult />
+                  </div>
                 </div>
-              </div>
-            </>
-          )}
-        </section>
-      </main>
+              </>
+            )}
+          </section>
+        </main>
+      </DriverProvider>
     </SectionProvider>
   );
 };

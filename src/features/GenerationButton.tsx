@@ -170,7 +170,7 @@ const GenerationButton = () => {
             <p
               className={`text-description text-sub-color ${styles.descriptionText}`}
             >
-              해당 작업은 20초 ~ 3분 정도 소요됩니다.
+              최대 수 분까지 소요될 수 있습니다.
             </p>
           </>
         }

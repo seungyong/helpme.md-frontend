@@ -161,7 +161,7 @@ const Section = () => {
           <p>섹션 추가</p>
         </button>
       </div>
-      <ul className={styles.sectionList}>
+      <ul className={`${styles.sectionList} section-list`}>
         {sections.map((section) => (
           <li
             key={section.title}
