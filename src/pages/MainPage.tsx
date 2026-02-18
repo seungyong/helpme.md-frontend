@@ -1,13 +1,16 @@
 import { useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import styles from "./MainPage.module.scss";
 
 import danger from "@assets/images/danger.svg";
 import { APIEndpoint } from "@src/types/APIEndpoint";
 import Spinner from "@src/components/common/Spinner";
+import { useAuth } from "@src/hooks/useAuth";
 
 const MainPage = () => {
+  const navigate = useNavigate();
+  const { isLoggedIn } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const debounce = useRef<NodeJS.Timeout | null>(null);
 
@@ -42,6 +45,11 @@ const MainPage = () => {
   ];
 
   const handleGithubLogin = () => {
+    if (isLoggedIn) {
+      navigate("/repo/select");
+      return;
+    }
+
     setIsLoading(true);
 
     if (debounce.current) {
