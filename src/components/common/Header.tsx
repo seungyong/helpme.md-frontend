@@ -2,7 +2,7 @@ import { useCallback } from "react";
 
 import styles from "./Header.module.scss";
 
-import logoIcon from "@assets/images/logo.svg";
+import logoIcon from "/logo.svg";
 import logoutIcon from "@assets/images/logout.svg";
 import settings from "@assets/images/settings.svg";
 

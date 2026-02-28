@@ -1,0 +1,7 @@
+User-agent: *
+
+# Allow Main Page
+Allow: /$
+Disallow: /
+
+Sitemap: https://helpme.seungyong.co.kr/sitemap.xml
