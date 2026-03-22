@@ -264,9 +264,10 @@ const SectionStateManager = ({
           generateAPIEndpoint(
             APIEndpoint.SECTIONS_CONTENT,
             owner || "",
-            name || ""
+            name || "",
+            request.sectionId.toString()
           ),
-          request
+          { content: request.content || "" }
         )
         .then((response) => response.data),
     onSuccess: (_, variables) => {
