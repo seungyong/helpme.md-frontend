@@ -27,7 +27,7 @@ const PRButton = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [selectedBranch, setSelectedBranch] = useState<string>("");
   const effectiveBranch = useMemo(() => {
-    return selectedBranch || initialBranch;
+    return selectedBranch.length > 0 ? selectedBranch : initialBranch;
   }, [selectedBranch, initialBranch]);
 
   const { mutate: createPRMutation } = useMutation<PR, ApiError>({
@@ -51,6 +51,7 @@ const PRButton = () => {
 
   const handleCancel = () => {
     setIsLoading(false);
+    setIsOpen(false);
   };
 
   const handleConfirm = () => {

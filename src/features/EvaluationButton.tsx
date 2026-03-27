@@ -26,7 +26,7 @@ const EvaluationButton = () => {
     () => ["evaluation", owner || "", name || ""],
     [owner, name]
   );
-  const { listen } = useSse(queryKey, "completion-evaluate-draft");
+  const { listen, stop } = useSse(queryKey, "completion-evaluate-draft");
 
   const { fullContent } = useSection();
   const { initialBranch } = useBranch();
@@ -36,7 +36,7 @@ const EvaluationButton = () => {
   const [selectedBranch, setSelectedBranch] = useState<string>("");
 
   const effectiveBranch = useMemo(() => {
-    return selectedBranch || initialBranch;
+    return selectedBranch.length > 0 ? selectedBranch : initialBranch;
   }, [selectedBranch, initialBranch]);
 
   const { mutate: fallbackMutation } = useMutation({
@@ -63,9 +63,12 @@ const EvaluationButton = () => {
   }, []);
 
   const handleCancel = () => {
+    toast.dismiss();
+
     setIsLoading(false);
     setIsOpen(false);
     setSelectedBranch(initialBranch);
+    stop();
   };
 
   const getTaskId = useCallback(() => {
@@ -92,7 +95,7 @@ const EvaluationButton = () => {
   };
 
   const handleFallback = useCallback(() => {
-    const taskId = queryClient.getQueryData<string>([...queryKey, "taskId"]);
+    const taskId = getTaskId();
     if (!taskId) {
       toast.error("평가에 실패했습니다.");
       return;
@@ -107,7 +110,7 @@ const EvaluationButton = () => {
         setIsLoading(false);
       },
     });
-  }, [queryClient, queryKey, fallbackMutation, closeModalAndReset]);
+  }, [getTaskId, fallbackMutation, closeModalAndReset]);
 
   const handleConfirm = () => {
     setIsLoading(true);
@@ -163,8 +166,9 @@ const EvaluationButton = () => {
         description={
           <>
             <p>
-              현재 작성한 README.md를 평가하며, 프로젝트의 커밋 내역, 코드,
-              구조, 언어 등 여러 가지 정보를 참고하여 만들어집니다.
+              현재 작성한 README.md 내용을 평가합니다. <br />
+              프로젝트의 커밋 내역, 코드, 구조 등 평가에 필요한 요소는 선택한
+              Branch를 기준으로 조회합니다.
             </p>
             <p>
               반드시, 생성 전 프로젝트의{" "}

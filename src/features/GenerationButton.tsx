@@ -30,13 +30,13 @@ const GenerationButton = () => {
     [owner, name]
   );
   const { refetchSections } = useSection();
-  const { listen } = useSse(queryKey, "completion-generate");
+  const { listen, stop } = useSse(queryKey, "completion-generate");
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [selectedBranch, setSelectedBranch] = useState<string>("");
   const effectiveBranch = useMemo(() => {
-    return selectedBranch || initialBranch;
+    return selectedBranch.length > 0 ? selectedBranch : initialBranch;
   }, [selectedBranch, initialBranch]);
 
   const { mutate: fallbackMutation } = useMutation({
@@ -66,6 +66,7 @@ const GenerationButton = () => {
     setIsOpen(false);
     setIsLoading(false);
     setSelectedBranch(initialBranch);
+    stop();
   };
 
   const getTaskId = useCallback(() => {
@@ -159,8 +160,8 @@ const GenerationButton = () => {
         description={
           <>
             <p>
-              AI를 활용한 README 초안 생성은 프로젝트의 커밋 내역, 코드, 구조,
-              언어 등 여러 가지 정보를 참고하여 만들어집니다.
+              README 초안 생성은 선택한 Branch의 커밋 내역, 코드, 구조, 언어 등
+              여러 가지 정보를 참고하여 만들어집니다. <br />
             </p>
             <p>
               반드시, 생성 전 프로젝트의{" "}

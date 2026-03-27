@@ -19,25 +19,20 @@ export interface SseListenOptions<T = Sections> {
  *
  * @param queryKey - 쿼리 키
  * @param eventName - 이벤트 이름
- * @returns { listen } - 이벤트 리스너 함수 (옵션으로 onSuccess/onError 콜백 전달)
+ * @returns { listen, stop } - 이벤트 리스너 함수와 연결 종료 함수 (옵션으로 onSuccess/onError 콜백 전달)
  */
 export const useSse = (queryKey: string[], eventName: string) => {
   const queryClient = useQueryClient();
   const eventSourceRef = useRef<EventSource | null>(null);
 
-  const stop = (eventSource: EventSource) => {
-    eventSource.close();
-    if (eventSourceRef.current === eventSource) {
-      eventSourceRef.current = null;
-    }
+  const stop = () => {
+    console.log(`EventSource : ${eventSourceRef.current}`);
+
+    eventSourceRef.current?.close();
+    eventSourceRef.current = null;
   };
 
   const listen = <T = Sections>(options?: SseListenOptions<T>) => {
-    if (eventSourceRef.current) {
-      eventSourceRef.current.close();
-      eventSourceRef.current = null;
-    }
-
     const eventSource = new EventSource(
       `${import.meta.env.VITE_API_URL}${APIEndpoint.SSE}`,
       {
@@ -64,7 +59,7 @@ export const useSse = (queryKey: string[], eventName: string) => {
         options?.onSuccess?.(data as T);
       }
 
-      stop(eventSource);
+      stop();
     });
 
     eventSource.addEventListener(eventName + "-error", (event) => {
@@ -74,26 +69,23 @@ export const useSse = (queryKey: string[], eventName: string) => {
         options?.onError?.(error as ApiError);
       }
 
-      stop(eventSource);
+      stop();
     });
 
     eventSource.onerror = () => {
-      stop(eventSource);
+      stop();
     };
 
     return () => {
-      stop(eventSource);
+      stop();
     };
   };
 
   useEffect(() => {
     return () => {
-      if (eventSourceRef.current) {
-        eventSourceRef.current.close();
-        eventSourceRef.current = null;
-      }
+      stop();
     };
   }, []);
 
-  return { listen };
+  return { listen, stop };
 };

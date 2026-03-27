@@ -10,7 +10,7 @@ import { APIEndpoint, generateAPIEndpoint } from "@src/types/APIEndpoint";
 export const useBranch = () => {
   const { owner, name } = useParams();
 
-  const { data: branches, isSuccess } = useQuery<Branches, ApiError, string[]>({
+  const { data, isSuccess } = useQuery<Branches, ApiError, Branches>({
     queryKey: ["branches", owner, name],
     queryFn: () =>
       apiClient
@@ -18,16 +18,15 @@ export const useBranch = () => {
           generateAPIEndpoint(APIEndpoint.BRANCHES, owner || "", name || "")
         )
         .then((response) => response.data),
-    select: (data: Branches) => data.branches,
     enabled: !!owner && !!name,
   });
 
   const initialBranch = useMemo(() => {
-    return branches?.[0] || "";
-  }, [branches]);
+    return data?.defaultBranch || "";
+  }, [data]);
 
   return {
-    branches: branches || [],
+    branches: data?.branches || [],
     initialBranch,
     isSuccess,
   };

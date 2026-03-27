@@ -7,7 +7,8 @@ interface Option {
 
 interface SelectProps {
   options: Option[];
-  value: string;
+  value?: string;
+  selectedValue?: string;
   onChange: (value: string) => void;
   disabled?: boolean;
 }
@@ -15,6 +16,7 @@ interface SelectProps {
 const Select = ({
   options,
   value,
+  selectedValue,
   onChange,
   disabled = false,
 }: SelectProps) => {
@@ -23,6 +25,7 @@ const Select = ({
       value={value}
       onChange={(e) => onChange(e.target.value)}
       disabled={disabled}
+      defaultValue={selectedValue}
       className={`${styles.select} ${disabled ? styles.disabled : ""}`}
     >
       {options.map((option) => (

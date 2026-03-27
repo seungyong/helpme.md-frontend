@@ -104,6 +104,7 @@ const InitSection = ({
               branches?.map((branch) => ({
                 label: branch,
                 value: branch,
+                selectedValue: initialBranch,
               })) || []
             }
             value={effectiveBranch}

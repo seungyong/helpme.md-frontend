@@ -18,6 +18,7 @@ export interface Repository {
 
 export interface Branches {
   branches: string[];
+  defaultBranch: string;
 }
 
 export interface PR {
