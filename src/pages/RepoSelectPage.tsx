@@ -20,7 +20,7 @@ const RepoSelectPage = () => {
   const [selectedInstallationId, setSelectedInstallationId] = useState<
     string | null
   >(null);
-  const { isLoggedIn, isLoading } = useAuth();
+  const { isLoggedIn, isLoading, isLogout } = useAuth();
 
   const { data: installations, refetch: refetchInstallations } = useQuery({
     queryKey: ["installations"],
@@ -146,7 +146,7 @@ const RepoSelectPage = () => {
     };
   }, [selectedInstallationId, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  if (!isLoggedIn && !isLoading) {
+  if (!isLogout && !isLoggedIn && !isLoading) {
     sessionStorage.setItem("redirectUrl", "/repo/select");
     window.location.replace(
       `${import.meta.env.VITE_API_URL}${APIEndpoint.OAUTH2_LOGIN}`

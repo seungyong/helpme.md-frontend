@@ -3,6 +3,7 @@ import { useContext, createContext } from "react";
 interface AuthContextType {
   isLoggedIn: boolean;
   isLoading: boolean;
+  isLogout: boolean;
   login: () => void;
   logout: () => Promise<void>;
   withdraw: () => Promise<void>;
